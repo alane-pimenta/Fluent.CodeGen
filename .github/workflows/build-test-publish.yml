@@ -1,0 +1,40 @@
+name: Build, Test and Publish
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 7.0.402
+        source-url: https://nuget.pkg.github.com/Alanep0922/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: |
+        cd Fluent.CodeGen
+        dotnet build --configuration Release --no-restore
+
+    - name: Pack
+      run: |  
+          cd Fluent.CodeGen
+          dotnet pack -c Release -o out
+
+    - name: Push Fluent.CodeGen to GitHub registry
+      run: |
+        dotnet nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/Alanep0922/index.json -Username Alanep0922 -Password ${{ secrets.GITHUB_TOKEN }}
+        dotnet nuget push ./Fluent.CodeGen/out/*.nupkg --skip-duplicate
+
+    - name: Publish Fluent.CodeGen to nuget.org
+      run: |
+        dotnet nuget push ./Fluent.CodeGen/out/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
