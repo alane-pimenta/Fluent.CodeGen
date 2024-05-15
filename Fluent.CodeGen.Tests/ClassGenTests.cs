@@ -12,14 +12,14 @@ namespace Fluent.CodeGen.Tests
                 .Using("System")
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                class Program
+                {
+                }
+                """";
 
-            var expectedCode = @"using System;
-class Program
-{
-}
-";
             Assert.Equal(expectedCode, generatedCode);
-
         }
 
 
@@ -32,15 +32,15 @@ class Program
                 .Using("System", "System.Text")
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                using System.Text;
+                class Program
+                {
+                }
+                """";
 
-            var expectedCode = @"using System;
-using System.Text;
-class Program
-{
-}
-";
             Assert.Equal(expectedCode, generatedCode);
-
         }
 
 
@@ -54,14 +54,14 @@ class Program
                 .Public()
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                public class Program
+                {
+                }
+                """";
 
-            var expectedCode = @"using System;
-public class Program
-{
-}
-";
             Assert.Equal(expectedCode, generatedCode);
-
         }
 
 
@@ -77,14 +77,14 @@ public class Program
                 .Static()
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                public static class Program
+                {
+                }
+                """";
 
-            var expectedCode = @"using System;
-public static class Program
-{
-}
-";
             Assert.Equal(expectedCode, generatedCode);
-
         }
 
 
@@ -99,15 +99,16 @@ public static class Program
                 .Public()
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                namespace My.Test
+                {
+                    public class Program
+                    {
+                    }
+                }
+                """";
 
-            var expectedCode = @"using System;
-namespace My.Test
-{
-    public class Program
-    {
-    }
-}
-";
             Assert.Equal(expectedCode, generatedCode);
 
         }
@@ -126,17 +127,17 @@ namespace My.Test
                 .Extends("MyClass")
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                namespace My.Test
+                {
+                    public class Program : MyClass
+                    {
+                    }
+                }
+                """";
 
-            var expectedCode = @"using System;
-namespace My.Test
-{
-    public class Program : MyClass
-    {
-    }
-}
-";
             Assert.Equal(expectedCode, generatedCode);
-
         }
 
 
@@ -154,17 +155,17 @@ namespace My.Test
                 .Implements("IInterface", "IInterface2")
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                namespace My.Test
+                {
+                    public class Program : MyClass, IInterface, IInterface2
+                    {
+                    }
+                }
+                """";
 
-            var expectedCode = @"using System;
-namespace My.Test
-{
-    public class Program : MyClass, IInterface, IInterface2
-    {
-    }
-}
-";
             Assert.Equal(expectedCode, generatedCode);
-
         }
 
 
@@ -180,17 +181,17 @@ namespace My.Test
                 .Implements("IInterface", "IInterface2")
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                namespace My.Test
+                {
+                    public class Program : IInterface, IInterface2
+                    {
+                    }
+                }
+                """";
 
-            var expectedCode = @"using System;
-namespace My.Test
-{
-    public class Program : IInterface, IInterface2
-    {
-    }
-}
-";
             Assert.Equal(expectedCode, generatedCode);
-
         }
 
 
@@ -208,17 +209,17 @@ namespace My.Test
                 .Implements("IInterface", "IInterface2")
                 .GenerateCode();
 
+            var expectedCode = """"
+                using System;
+                namespace My.Test
+                {
+                    public static class Program : IInterface, IInterface2
+                    {
+                    }
+                }
+                """";
 
-            var expectedCode = @"using System;
-namespace My.Test
-{
-    public static class Program : IInterface, IInterface2
-    {
-    }
-}
-";
             Assert.Equal(expectedCode, generatedCode);
-
         }
 
         [Fact]
@@ -234,17 +235,79 @@ namespace My.Test
                 .GenerateCode();
 
 
-            var expectedCode = @"using System;
-namespace My.Test
-{
-    static class Program : IInterface, IInterface2
-    {
-    }
-}
-";
-            Assert.Equal(expectedCode, generatedCode);
+            var expectedCode = """"
+                using System;
+                namespace My.Test
+                {
+                    static class Program : IInterface, IInterface2
+                    {
+                    }
+                }
+                """";
 
+            Assert.Equal(expectedCode, generatedCode);
         }
 
+        
+        [Fact]
+        public void TestInternalClass()
+        {
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+                .Using("System")
+                .Namespace("My.Test")
+                .Internal()
+                .Implements("IInterface", "IInterface2")
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+                namespace My.Test
+                {
+                    internal class Program : IInterface, IInterface2
+                    {
+                    }
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+
+
+        [Fact]
+        public void TestClassWithMethod()
+        {
+            var methodGen = new MethodGen(name: "MethodTest")
+                .Public()
+                .WithReturnType("int")
+                .WithBody("return 0;");
+
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+                .Using("System")
+                .Namespace("My.Test")
+                .Public()
+                .WithMethod(methodGen)
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+                namespace My.Test
+                {
+                    public class Program
+                    {
+                        public int MethodTest()
+                        {
+                            return 0;
+                        }
+                    }
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
     }
 }

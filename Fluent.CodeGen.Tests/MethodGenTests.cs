@@ -23,15 +23,15 @@ namespace Fluent.CodeGen.Tests
             """";
 
 
-            var methodGen = new MethodGen(type: "string", name: "GerarString");
+            var methodGen = new MethodGen(name: "GerarString");
 
             var generatedCode = methodGen.Public()
                 .Static()
+                .WithReturnType("string")
                 .WithParameter("int", "bananas")
                 .WithParameter("int", "bananas2")
                 .WithBody(body)
                 .GenerateCode();
-
 
             var expectedCode = """"
                 public static string GerarString(int bananas, int bananas2)
@@ -45,7 +45,7 @@ namespace Fluent.CodeGen.Tests
                     return textoFinal;
                 }
                 """";
-            Assert.Equal(generatedCode, expectedCode);
+            Assert.Equal(expectedCode, generatedCode);
         }
     }
 }

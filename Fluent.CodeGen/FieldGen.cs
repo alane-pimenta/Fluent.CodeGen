@@ -2,9 +2,14 @@
 {
     public class FieldGen
     {
-        private bool @static;
+        private bool isStatic = false;
         private string type;
-        private string accessModifier = "";
         private string name;
+
+        public FieldGen Static()
+        {
+            isStatic = true;
+            return this;
+        }
     }
 }
