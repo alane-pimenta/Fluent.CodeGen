@@ -1,51 +1,197 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Fluent.CodeGen.Tests
+﻿namespace Fluent.CodeGen.Tests
 {
     public class MethodGenTests
     {
-        //<access mod> + <static?> + <type>(<parameterGen>){ <corpo> }
         [Fact]
-        void TestBasicMethod()
+        void TestStaticMethod()
         {
             var body = """"
-            string textoFinal = "";
-            for(int i = 0; i < 10; i++)
+            string finalText = initialText;
+            for(int i = 0; i < amount; i++)
             {
-                string a = "the number is" + i;
-                textoFinal = a + ", ";
+                string numberText = "the number is" + i;
+                finalText = finalText + numberText + ", ";
             }
-            return textoFinal;
+            return finalText;
             """";
 
-
-            var methodGen = new MethodGen(name: "GerarString");
+            var methodGen = new MethodGen(name: "GenerateText");
 
             var generatedCode = methodGen.Public()
                 .Static()
                 .WithReturnType("string")
-                .WithParameter("int", "bananas")
-                .WithParameter("int", "bananas2")
+                .WithParameter("string", "initialText")
+                .WithParameter("int", "amount")
                 .WithBody(body)
                 .GenerateCode();
 
             var expectedCode = """"
-                public static string GerarString(int bananas, int bananas2)
+                public static string GenerateText(string initialText, int amount)
                 {
-                    string textoFinal = "";
-                    for(int i = 0; i < 10; i++)
+                    string finalText = initialText;
+                    for(int i = 0; i < amount; i++)
                     {
-                        string a = "the number is" + i;
-                        textoFinal = a + ", ";
+                        string numberText = "the number is" + i;
+                        finalText = finalText + numberText + ", ";
                     }
-                    return textoFinal;
+                    return finalText;
+                }
+                """";
+            Assert.Equal(expectedCode, generatedCode);
+            Assert.False(methodGen.IsOverride);
+            Assert.True(methodGen.IsStatic);
+            Assert.Equal("GenerateText", methodGen.Name);
+        }
+
+
+        [Fact]
+        void TestPrivateMethod()
+        {
+            var body = """"
+            string finalText = "";
+            for(int i = 0; i < amount; i++)
+            {
+                string numberText = "the number is" + i;
+                finalText = finalText + numberText + ", ";
+            }
+            return finalText;
+            """";
+
+            var methodGen = new MethodGen(name: "GenerateText");
+
+            var generatedCode = methodGen.Private()
+                .WithReturnType("string")
+                .WithParameter("int", "amount")
+                .WithBody(body)
+                .GenerateCode();
+
+            var expectedCode = """"
+                private string GenerateText(int amount)
+                {
+                    string finalText = "";
+                    for(int i = 0; i < amount; i++)
+                    {
+                        string numberText = "the number is" + i;
+                        finalText = finalText + numberText + ", ";
+                    }
+                    return finalText;
                 }
                 """";
             Assert.Equal(expectedCode, generatedCode);
         }
+
+
+        [Fact]
+        void TestProtectedMethod()
+        {
+            var body = """"
+            string finalText = "";
+            for(int i = 0; i < amount; i++)
+            {
+                string numberText = "the number is" + i;
+                finalText = finalText + numberText + ", ";
+            }
+            return finalText;
+            """";
+
+            var methodGen = new MethodGen(name: "GenerateText");
+
+            var generatedCode = methodGen.Protected()
+                .WithReturnType("string")
+                .WithParameter("int", "amount")
+                .WithBody(body)
+                .GenerateCode();
+
+            var expectedCode = """"
+                protected string GenerateText(int amount)
+                {
+                    string finalText = "";
+                    for(int i = 0; i < amount; i++)
+                    {
+                        string numberText = "the number is" + i;
+                        finalText = finalText + numberText + ", ";
+                    }
+                    return finalText;
+                }
+                """";
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+        [Fact]
+        void TestOverrideMethod()
+        {
+            var body = """"
+            string finalText = "";
+            for(int i = 0; i < amount; i++)
+            {
+                string numberText = "the number is" + i;
+                finalText = finalText + numberText + ", ";
+            }
+            return finalText;
+            """";
+
+            var methodGen = new MethodGen(name: "GenerateText");
+
+            var generatedCode = methodGen
+                .Override()
+                .WithReturnType("string")
+                .WithParameter("int", "amount")
+                .WithBody(body)
+                .GenerateCode();
+
+            var expectedCode = """"
+                override string GenerateText(int amount)
+                {
+                    string finalText = "";
+                    for(int i = 0; i < amount; i++)
+                    {
+                        string numberText = "the number is" + i;
+                        finalText = finalText + numberText + ", ";
+                    }
+                    return finalText;
+                }
+                """";
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+        [Fact]
+        void TestPublicOverrideMethod()
+        {
+            var body = """"
+            string finalText = "";
+            for(int i = 0; i < amount; i++)
+            {
+                string numberText = "the number is" + i;
+                finalText = finalText + numberText + ", ";
+            }
+            return finalText;
+            """";
+
+            var methodGen = new MethodGen(name: "GenerateText");
+
+            var generatedCode = methodGen.Public()
+                .Override()
+                .WithReturnType("string")
+                .WithParameter("int", "amount")
+                .WithBody(body)
+                .GenerateCode();
+
+            var expectedCode = """"
+                public override string GenerateText(int amount)
+                {
+                    string finalText = "";
+                    for(int i = 0; i < amount; i++)
+                    {
+                        string numberText = "the number is" + i;
+                        finalText = finalText + numberText + ", ";
+                    }
+                    return finalText;
+                }
+                """";
+            Assert.Equal(expectedCode, generatedCode);
+            Assert.True(methodGen.IsOverride);
+            Assert.False(methodGen.IsStatic);
+        }
+
     }
 }

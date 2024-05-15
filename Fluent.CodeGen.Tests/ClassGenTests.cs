@@ -279,7 +279,7 @@ namespace Fluent.CodeGen.Tests
         [Fact]
         public void TestClassWithMethod()
         {
-            var methodGen = new MethodGen(name: "MethodTest")
+            var methodGen = new MethodGen(name: "TestMethod")
                 .Public()
                 .WithReturnType("int")
                 .WithBody("return 0;");
@@ -299,7 +299,7 @@ namespace Fluent.CodeGen.Tests
                 {
                     public class Program
                     {
-                        public int MethodTest()
+                        public int TestMethod()
                         {
                             return 0;
                         }
