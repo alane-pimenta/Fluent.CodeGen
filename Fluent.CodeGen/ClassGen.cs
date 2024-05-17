@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using Fluent.CodeGen.Consts;
 using System.Linq;
+using System;
 
 namespace Fluent.CodeGen
 {
@@ -18,6 +19,7 @@ namespace Fluent.CodeGen
         private string accessModifier = AccessModifiers.Default;
 
         private List<MethodGen> methods;
+        private ConstructorGen constructor;
 
         public ClassGen(string name)
         {
@@ -78,6 +80,13 @@ namespace Fluent.CodeGen
         public ClassGen WithMethod(MethodGen method)
         {
             this.methods.Add(method);
+            return this;
+        }
+
+        public ClassGen Constructor(Action<ConstructorGen> ctor)
+        {
+            this.constructor = new ConstructorGen(className: this.ClassName);
+            ctor.Invoke(constructor);
             return this;
         }
 
@@ -148,6 +157,11 @@ namespace Fluent.CodeGen
             this.indentedTextWriter.WriteLine(classDeclaration.ToString());
             this.indentedTextWriter.WriteLine("{");
             this.indentedTextWriter.Indent++;
+
+            if(constructor is not null)
+            {
+                indentedTextWriter.WriteLine(constructor.GenerateCode(indentedTextWriter.Indent));
+            }
 
             var last = methods.LastOrDefault();
             methods.ForEach(method => 
