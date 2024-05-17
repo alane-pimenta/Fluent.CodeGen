@@ -94,7 +94,7 @@ namespace Fluent.CodeGen
             indentedTextWriter.WriteLine("{");
             indentedTextWriter.Indent++;
 
-            Body.Split("\n").ToList().ForEach(this.indentedTextWriter.WriteLine);
+            WriteMultipleLines(Body);
 
             indentedTextWriter.Indent--;
             indentedTextWriter.WriteLine("}");

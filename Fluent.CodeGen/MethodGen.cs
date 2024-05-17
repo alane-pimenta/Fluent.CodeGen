@@ -116,7 +116,9 @@ namespace Fluent.CodeGen
             this.indentedTextWriter.WriteLine(")");
             this.indentedTextWriter.WriteLine("{");
             this.indentedTextWriter.Indent++;
-            Body.Split("\n").ToList().ForEach(this.indentedTextWriter.WriteLine);
+            
+            WriteMultipleLines(Body);
+            
             this.indentedTextWriter.Indent--;
             this.indentedTextWriter.Write("}");
 
