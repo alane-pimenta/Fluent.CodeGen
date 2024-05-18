@@ -14,6 +14,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+                
                 class Program
                 {
                 }
@@ -22,6 +23,26 @@ namespace Fluent.CodeGen.Tests
             Assert.Equal(expectedCode, generatedCode);
         }
 
+        [Fact]
+        public void TestDuplicateUsing()
+        {
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+                .Using("System")
+                .Using("System")
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+                
+                class Program
+                {
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
 
         [Fact]
         public void TestClassWithoutNamespaceAndMultipleUsings()
@@ -35,6 +56,7 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = """"
                 using System;
                 using System.Text;
+
                 class Program
                 {
                 }
@@ -56,6 +78,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 public class Program
                 {
                 }
@@ -79,6 +102,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 public static class Program
                 {
                 }
@@ -101,6 +125,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 namespace My.Test
                 {
                     public class Program
@@ -129,6 +154,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 namespace My.Test
                 {
                     public class Program : MyClass
@@ -157,6 +183,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 namespace My.Test
                 {
                     public class Program : MyClass, IInterface, IInterface2
@@ -183,6 +210,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 namespace My.Test
                 {
                     public class Program : IInterface, IInterface2
@@ -211,6 +239,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 namespace My.Test
                 {
                     public static class Program : IInterface, IInterface2
@@ -237,6 +266,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 namespace My.Test
                 {
                     static class Program : IInterface, IInterface2
@@ -263,6 +293,7 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 namespace My.Test
                 {
                     internal class Program : IInterface, IInterface2
@@ -279,7 +310,7 @@ namespace Fluent.CodeGen.Tests
         [Fact]
         public void TestClassWithMethod()
         {
-            var methodGen = new MethodGen(name: "MethodTest")
+            var methodGen = new MethodGen(name: "TestMethod")
                 .Public()
                 .WithReturnType("int")
                 .WithBody("return 0;");
@@ -295,11 +326,12 @@ namespace Fluent.CodeGen.Tests
 
             var expectedCode = """"
                 using System;
+
                 namespace My.Test
                 {
                     public class Program
                     {
-                        public int MethodTest()
+                        public int TestMethod()
                         {
                             return 0;
                         }

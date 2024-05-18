@@ -3,6 +3,8 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Collections.Generic;
 using Fluent.CodeGen.Consts;
+using System.Linq;
+using System;
 
 namespace Fluent.CodeGen
 {
@@ -12,29 +14,36 @@ namespace Fluent.CodeGen
         public string ClassName { get; private set; }
         private string? extends;
         private bool isStatic;
-        private List<string> implements;
-        private List<string> namespaces;
+        private HashSet<string> implements;
+        private HashSet<string> namespaces;
         private string accessModifier = AccessModifiers.Default;
 
         private List<MethodGen> methods;
+        private ConstructorGen constructor;
 
         public ClassGen(string name)
         {
             ClassName = name;
-            implements = new List<string>();
-            namespaces = new List<string>();
+            implements = new HashSet<string>();
+            namespaces = new HashSet<string>();
             methods = new List<MethodGen>();
         }
 
         public ClassGen Using(params string[] namespaces)
         {
-            this.namespaces.AddRange(namespaces);
+            foreach(var @namespace in namespaces)
+            {
+                this.namespaces.Add(@namespace);
+            }
             return this;
         }
 
-        public ClassGen Implements(params string[] @using)
+        public ClassGen Implements(params string[] usings)
         {
-            this.implements.AddRange(@using);
+            foreach (var @using in usings)
+            {
+                this.implements.Add(@using);
+            }
             return this;
         }
 
@@ -74,11 +83,23 @@ namespace Fluent.CodeGen
             return this;
         }
 
+        public ClassGen Constructor(Action<ConstructorGen> ctor)
+        {
+            this.constructor = new ConstructorGen(className: this.ClassName);
+            ctor.Invoke(constructor);
+            return this;
+        }
+
         public override string GenerateCode()
         {
             foreach (string @namespace in namespaces)
             {
                 this.indentedTextWriter.WriteLine($"using {@namespace};");
+            }
+
+            if(namespaces.Any())
+            {
+                this.indentedTextWriter.WriteLine();
             }
 
             if (!string.IsNullOrEmpty(@namespace))
@@ -136,9 +157,23 @@ namespace Fluent.CodeGen
             this.indentedTextWriter.WriteLine(classDeclaration.ToString());
             this.indentedTextWriter.WriteLine("{");
             this.indentedTextWriter.Indent++;
+
+            if(constructor is not null)
+            {
+                indentedTextWriter.WriteLine(constructor.GenerateCode(indentedTextWriter.Indent));
+            }
+
+            var last = methods.LastOrDefault();
             methods.ForEach(method => 
             {
                 this.indentedTextWriter.WriteLine(method.GenerateCode(this.indentedTextWriter.Indent));
+                if(!last.Equals(method))
+                {
+                    var indentation = this.indentedTextWriter.Indent;
+                    this.indentedTextWriter.Indent = 0;
+                    this.indentedTextWriter.WriteLine();
+                    this.indentedTextWriter.Indent = indentation;
+                }
             });
 
             this.indentedTextWriter.Indent--;
