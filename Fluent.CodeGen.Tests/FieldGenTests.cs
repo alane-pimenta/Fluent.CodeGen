@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace Fluent.CodeGen.Tests
 {
     public class FieldGenTests

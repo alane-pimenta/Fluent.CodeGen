@@ -3,11 +3,15 @@ namespace Fluent.CodeGen.Tests
     public class ClassGenTests
     {
 
-        [Fact]
-        public void TestClassWithoutNamespace()
+        [Theory]
+        [InlineData("\n")]
+        [InlineData("\r\n")]
+        public void TestClassWithoutNamespace(string lineEnding)
         {
-            var classGen = new ClassGen(name: "Program");
+            CodeGen.LineEnding = lineEnding;
 
+            var classGen = new ClassGen(name: "Program");
+            
             var generatedCode = classGen
                 .Using("System")
                 .GenerateCode();
@@ -20,7 +24,7 @@ namespace Fluent.CodeGen.Tests
                 }
                 """";
 
-            Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal(expectedCode.ReplaceLineEndings(lineEnding), generatedCode);
         }
 
         [Fact]
@@ -305,7 +309,33 @@ namespace Fluent.CodeGen.Tests
             Assert.Equal(expectedCode, generatedCode);
         }
 
+        [Fact]
+        public void TestConstuctor()
+        {
+            var classGen = new ClassGen(name: "Program");
 
+            var generatedCode = classGen
+                .Using("System")
+                .Namespace("My.Test")
+                .Constructor(constructor => constructor.Public())
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+
+                namespace My.Test
+                {
+                    class Program
+                    {
+                        public Program()
+                        {
+                        }
+                    }
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
 
         [Fact]
         public void TestClassWithMethod()

@@ -1,4 +1,3 @@
-
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Linq;
@@ -7,14 +6,19 @@ namespace Fluent.CodeGen
 {
     public abstract class CodeGen
     {
+        public static string? LineEnding { get; set; }
+
         protected readonly IndentedTextWriter indentedTextWriter;
         protected readonly StringWriter stringWriter;
 
         public CodeGen()
         {
-            this.stringWriter = new StringWriter();
-            this.indentedTextWriter = new IndentedTextWriter(stringWriter);
-            this.indentedTextWriter.NewLine = "\n";
+            stringWriter = new StringWriter();
+            indentedTextWriter = new IndentedTextWriter(stringWriter);
+            if(!string.IsNullOrEmpty(LineEnding))
+            {
+                indentedTextWriter.NewLine = LineEnding;
+            }
         }
 
         protected void WriteMultipleLines(string body)
@@ -40,7 +44,6 @@ namespace Fluent.CodeGen
                 }
             });
         }
-
         public abstract string GenerateCode();
 
         public string GenerateCode(int indentation)
