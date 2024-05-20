@@ -21,15 +21,15 @@ namespace Fluent.CodeGen
 
         public MethodGen(string name) 
         {
-            this.Name = name;
-            this.parameters = new Dictionary<string, string>();
+            Name = name;
+            parameters = new Dictionary<string, string>();
         }
 
         public MethodGen(string returnType, string name) 
         {
-            this.ReturnType = returnType;
-            this.Name = name;
-            this.parameters = new Dictionary<string, string>();
+            ReturnType = returnType;
+            Name = name;
+            parameters = new Dictionary<string, string>();
         }
 
         public MethodGen Public()
@@ -58,13 +58,13 @@ namespace Fluent.CodeGen
 
         public MethodGen Override()
         {
-            this.IsOverride = true;
+            IsOverride = true;
             return this;
         }
 
         public MethodGen Static()
         {
-            this.IsStatic = true;
+            IsStatic = true;
             return this;
         }
 
@@ -76,51 +76,51 @@ namespace Fluent.CodeGen
 
         public MethodGen WithBody(string body)
         {
-            this.Body = body;
+            Body = body;
             return this;
         }
 
         public MethodGen WithReturnType(string returnType)
         {
-            this.ReturnType = returnType;
+            ReturnType = returnType;
             return this;
         }
 
         public override string GenerateCode()
         {
-            this.indentedTextWriter.NewLine = "\n";
+            indentedTextWriter.NewLine = "\n";
 
             if(!AccessModifiers.Default.Equals(accessModifier))
             {
-                this.indentedTextWriter.Write($"{accessModifier} ");
+                indentedTextWriter.Write($"{accessModifier} ");
             }
             
             if(IsOverride)
             {
-                this.indentedTextWriter.Write("override ");
+                indentedTextWriter.Write("override ");
             }
             
             if(IsStatic)
             {
-                this.indentedTextWriter.Write("static ");
+                indentedTextWriter.Write("static ");
             }
-            this.indentedTextWriter.Write(ReturnType);
-            this.indentedTextWriter.Write(" ");
+            indentedTextWriter.Write(ReturnType);
+            indentedTextWriter.Write(" ");
 
-            this.indentedTextWriter.Write(Name);
-            this.indentedTextWriter.Write("(");
+            indentedTextWriter.Write(Name);
+            indentedTextWriter.Write("(");
 
             var @params = string.Join(", ", parameters.Select(parameter => $"{parameter.Value} {parameter.Key}"));
-            this.indentedTextWriter.Write(@params);
+            indentedTextWriter.Write(@params);
             
-            this.indentedTextWriter.WriteLine(")");
-            this.indentedTextWriter.WriteLine("{");
-            this.indentedTextWriter.Indent++;
+            indentedTextWriter.WriteLine(")");
+            indentedTextWriter.WriteLine("{");
+            indentedTextWriter.Indent++;
             
             WriteMultipleLines(Body);
             
-            this.indentedTextWriter.Indent--;
-            this.indentedTextWriter.Write("}");
+            indentedTextWriter.Indent--;
+            indentedTextWriter.Write("}");
 
             return stringWriter.GetStringBuilder().ToString();
         }
