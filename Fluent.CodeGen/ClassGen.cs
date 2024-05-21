@@ -20,6 +20,7 @@ namespace Fluent.CodeGen
 
         private List<MethodGen> methods;
         private ConstructorGen constructor;
+        private List<FieldGen> fields;
 
         public ClassGen(string name)
         {
@@ -27,6 +28,7 @@ namespace Fluent.CodeGen
             implements = new HashSet<string>();
             namespaces = new HashSet<string>();
             methods = new List<MethodGen>();
+            fields = new List<FieldGen>();
         }
 
         public ClassGen Using(params string[] namespaces)
@@ -42,26 +44,26 @@ namespace Fluent.CodeGen
         {
             foreach (var @using in usings)
             {
-                this.implements.Add(@using);
+                implements.Add(@using);
             }
             return this;
         }
 
         public ClassGen Public()
         {
-            this.accessModifier = AccessModifiers.Public;
+            accessModifier = AccessModifiers.Public;
             return this;
         }
 
         public ClassGen Internal()
         {
-            this.accessModifier = AccessModifiers.Internal;
+            accessModifier = AccessModifiers.Internal;
             return this;
         }
 
         public ClassGen Extends(string className)
         {
-            this.extends = className;
+            extends = className;
             return this;
         }
         
@@ -73,20 +75,26 @@ namespace Fluent.CodeGen
 
         public ClassGen Static()
         {
-            this.isStatic = true;
+            isStatic = true;
             return this;
         }
 
         public ClassGen WithMethod(MethodGen method)
         {
-            this.methods.Add(method);
+            methods.Add(method);
             return this;
         }
 
         public ClassGen Constructor(Action<ConstructorGen> ctor)
         {
-            this.constructor = new ConstructorGen(className: this.ClassName);
+            constructor = new ConstructorGen(className: ClassName);
             ctor.Invoke(constructor);
+            return this;
+        }
+
+        public ClassGen WithField(FieldGen fieldGen)
+        {
+            fields.Add(fieldGen);
             return this;
         }
 
@@ -94,26 +102,26 @@ namespace Fluent.CodeGen
         {
             foreach (string @namespace in namespaces)
             {
-                this.indentedTextWriter.WriteLine($"using {@namespace};");
+                indentedTextWriter.WriteLine($"using {@namespace};");
             }
 
             if(namespaces.Any())
             {
-                this.indentedTextWriter.WriteLine();
+                indentedTextWriter.WriteLine();
             }
 
             if (!string.IsNullOrEmpty(@namespace))
             {
-                this.indentedTextWriter.WriteLine($"namespace {@namespace}");
-                this.indentedTextWriter.WriteLine("{");
-                this.indentedTextWriter.Indent++;
-                this.GenerateClassBody();
-                this.indentedTextWriter.Indent--;
-                this.indentedTextWriter.Write("}");
+                indentedTextWriter.WriteLine($"namespace {@namespace}");
+                indentedTextWriter.WriteLine("{");
+                indentedTextWriter.Indent++;
+                GenerateClassBody();
+                indentedTextWriter.Indent--;
+                indentedTextWriter.Write("}");
             }
             else
             {
-                this.GenerateClassBody();
+                GenerateClassBody();
             }
 
             return stringWriter.GetStringBuilder().ToString();
@@ -134,7 +142,7 @@ namespace Fluent.CodeGen
             }
             classDeclaration.Append($"class {ClassName}");
 
-            if(this.implements.Count > 0 || !string.IsNullOrEmpty(extends))
+            if(implements.Count > 0 || !string.IsNullOrEmpty(extends))
             {
                 classDeclaration.Append(" : ");
                 if (!string.IsNullOrEmpty(extends))
@@ -142,21 +150,34 @@ namespace Fluent.CodeGen
                     classDeclaration.Append(extends);
                 }
                 
-                if(this.implements.Count > 0 && !string.IsNullOrEmpty(extends))
+                if(implements.Count > 0 && !string.IsNullOrEmpty(extends))
                 {
                     classDeclaration.Append(", ");
                 }
 
-                if(this.implements.Count > 0)
+                if(implements.Count > 0)
                 {
                     var implemented = string.Join(", ", implements.ToArray());
                     classDeclaration.Append(implemented);
                 }
             }
 
-            this.indentedTextWriter.WriteLine(classDeclaration.ToString());
-            this.indentedTextWriter.WriteLine("{");
-            this.indentedTextWriter.Indent++;
+            indentedTextWriter.WriteLine(classDeclaration.ToString());
+            indentedTextWriter.WriteLine("{");
+            indentedTextWriter.Indent++;
+
+            foreach(var field in fields)
+            {
+                indentedTextWriter.WriteLine(field.GenerateCode());
+            }
+
+            if(fields.Any())
+            {
+                var indent = indentedTextWriter.Indent;
+                indentedTextWriter.Indent = 0;
+                indentedTextWriter.WriteLine();
+                indentedTextWriter.Indent = indent;
+            }
 
             if(constructor is not null)
             {
@@ -166,24 +187,24 @@ namespace Fluent.CodeGen
             var last = methods.LastOrDefault();
             methods.ForEach(method => 
             {
-                this.indentedTextWriter.WriteLine(method.GenerateCode(this.indentedTextWriter.Indent));
+                indentedTextWriter.WriteLine(method.GenerateCode(indentedTextWriter.Indent));
                 if(!last.Equals(method))
                 {
-                    var indentation = this.indentedTextWriter.Indent;
-                    this.indentedTextWriter.Indent = 0;
-                    this.indentedTextWriter.WriteLine();
-                    this.indentedTextWriter.Indent = indentation;
+                    var indentation = indentedTextWriter.Indent;
+                    indentedTextWriter.Indent = 0;
+                    indentedTextWriter.WriteLine();
+                    indentedTextWriter.Indent = indentation;
                 }
             });
 
-            this.indentedTextWriter.Indent--;
+            indentedTextWriter.Indent--;
             if(!string.IsNullOrEmpty(@namespace))
             {
-                this.indentedTextWriter.WriteLine("}");
+                indentedTextWriter.WriteLine("}");
             }
             else
             {
-                this.indentedTextWriter.Write("}");
+                indentedTextWriter.Write("}");
             }
         }
     }

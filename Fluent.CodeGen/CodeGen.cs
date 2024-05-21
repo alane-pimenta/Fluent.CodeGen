@@ -12,9 +12,9 @@ namespace Fluent.CodeGen
 
         public CodeGen()
         {
-            this.stringWriter = new StringWriter();
-            this.indentedTextWriter = new IndentedTextWriter(stringWriter);
-            this.indentedTextWriter.NewLine = "\n";
+            stringWriter = new StringWriter();
+            indentedTextWriter = new IndentedTextWriter(stringWriter);
+            indentedTextWriter.NewLine = "\n";
         }
 
         protected void WriteMultipleLines(string body)
@@ -46,10 +46,10 @@ namespace Fluent.CodeGen
         public string GenerateCode(int indentation)
         {
             string generatedCode = string.Empty;
-            int previousIndentation = this.indentedTextWriter.Indent;
-            this.indentedTextWriter.Indent = indentation;
+            int previousIndentation = indentedTextWriter.Indent;
+            indentedTextWriter.Indent = indentation;
             generatedCode = GenerateCode();
-            this.indentedTextWriter.Indent = previousIndentation;
+            indentedTextWriter.Indent = previousIndentation;
             return generatedCode;
         }
     }

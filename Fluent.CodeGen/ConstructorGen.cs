@@ -80,7 +80,7 @@ namespace Fluent.CodeGen
             indentedTextWriter.Write("(");
 
             var @params = string.Join(", ", parameters.Select(parameter => $"{parameter.Value} {parameter.Key}"));
-            this.indentedTextWriter.Write(@params);
+            indentedTextWriter.Write(@params);
 
             if(Base.Any())
             {

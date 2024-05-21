@@ -305,8 +305,6 @@ namespace Fluent.CodeGen.Tests
             Assert.Equal(expectedCode, generatedCode);
         }
 
-
-
         [Fact]
         public void TestClassWithMethod()
         {
@@ -335,6 +333,48 @@ namespace Fluent.CodeGen.Tests
                         {
                             return 0;
                         }
+                    }
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+        [Fact]
+        public void TestClassWithFields()
+        {
+            var fieldTest = new FieldGen("string", "test")
+                .Public()
+                .Static();
+
+            var fieldAmount = new FieldGen("int", "amount")
+                .Assign("10");
+
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+                .Using("System")
+                .Namespace("My.Test")
+                .Public()
+                .WithField(fieldTest)
+                .WithField(fieldAmount)
+                .Constructor(ctor => ctor.Public())
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+
+                namespace My.Test
+                {
+                    public class Program
+                    {
+                        public static string test;
+                        int amount = 10;
+
+                        public Program()
+                        {
+                        }
+
                     }
                 }
                 """";

@@ -1,15 +1,38 @@
 ﻿namespace Fluent.CodeGen
 {
-    public class FieldGen
+    public class FieldGen : ClassMemberGen<FieldGen>
     {
-        private bool isStatic = false;
-        private string type;
-        private string name;
-
-        public FieldGen Static()
+        public FieldGen(string type, string name) : base(type, name)
         {
-            isStatic = true;
-            return this;
+        }
+
+        public override string GenerateCode()
+        {
+            if(!string.IsNullOrEmpty(AccessModifier))
+            {
+                indentedTextWriter.Write($"{AccessModifier} ");
+            }
+
+            if(IsStatic)
+            {
+                indentedTextWriter.Write("static ");
+            }
+
+            if(IsReadonly)
+            {
+                indentedTextWriter.Write("readonly ");
+            }
+
+            indentedTextWriter.Write($"{Type} {Name}");
+
+            if(!string.IsNullOrWhiteSpace(AssignedValue))
+            {
+                indentedTextWriter.Write($" = {AssignedValue}");
+            }
+
+            indentedTextWriter.Write($";");
+
+            return stringWriter.ToString();
         }
     }
 }
