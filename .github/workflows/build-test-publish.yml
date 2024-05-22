@@ -28,8 +28,8 @@ jobs:
 
     - name: Pack
       run: |  
-          cd Fluent.CodeGen
-          dotnet pack -c Release -o out
+        cd Fluent.CodeGen
+        dotnet pack -c Release -o out
 
     - name: Publish Fluent.CodeGen to nuget.org
       run: |
