@@ -10,6 +10,9 @@ This library provides a fluent api that is responsible for generating C# human r
     <a href="https://app.codacy.com?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade">
         <img src="https://app.codacy.com/project/badge/Grade/557bd5392ade4dcc89cd810df48ba103"/>
     </a>
+    <a href="https://app.codacy.com?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage">
+        <img src="https://app.codacy.com/project/badge/Coverage/557bd5392ade4dcc89cd810df48ba103"/>
+    </a>
     <img alt="nuget version" src="https://img.shields.io/nuget/v/Fluent.CodeGen.svg">
 </p>
 
