@@ -23,8 +23,29 @@ jobs:
         dotnet build --configuration Release --no-restore
 
     - name: Test
+      run: dotnet test --collect:"XPlat Code Coverage" --no-restore --verbosity normal
+
+    - name: Moving test coverage result to root folder
       run: |
-        dotnet test 
+        mv Fluent.CodeGen.Tests/TestResults/**/coverage.cobertura.xml ./
+
+    - name: Send test coverage to Codacy
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: coverage.cobertura.xml
+
+    - name: Moving test coverage result to root folder
+      run: |
+        mv Tests/TestResults/**/coverage.cobertura.xml ./
+
+    - name: Send test coverage to Codacy
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: coverage.cobertura.xml
+
+
 
     - name: Pack
       run: |  

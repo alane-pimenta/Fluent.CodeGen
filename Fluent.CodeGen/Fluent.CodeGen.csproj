@@ -1,10 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.0.0-alpha</Version>
+    <Version>1.0.1-alpha</Version>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
 	  <LangVersion>11</LangVersion>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Alane Pimenta</Authors>
+    <Description>C# source generator using Fluent API</Description>
+    <PackageProjectUrl>https://github.com/Alanep0922/Fluent.CodeGen</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Alanep0922/Fluent.CodeGen</RepositoryUrl>
+    <PackageIcon>mini-logo.png</PackageIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\resources\mini-logo.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>
