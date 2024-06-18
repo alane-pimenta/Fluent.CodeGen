@@ -8,6 +8,7 @@
 
         public override string GenerateCode()
         {
+            Flush();
             if(!string.IsNullOrEmpty(AccessModifier))
             {
                 indentedTextWriter.Write($"{AccessModifier} ");

@@ -7,11 +7,19 @@ namespace Fluent.CodeGen
 {
     public abstract class CodeGen
     {
-        protected readonly IndentedTextWriter indentedTextWriter;
-        protected readonly StringWriter stringWriter;
+        protected IndentedTextWriter indentedTextWriter;
+        protected StringWriter stringWriter;
 
         public CodeGen()
         {
+            Flush();
+        }
+
+        protected void Flush()
+        {
+            stringWriter?.Dispose();
+            indentedTextWriter?.Dispose();
+
             stringWriter = new StringWriter();
             indentedTextWriter = new IndentedTextWriter(stringWriter);
             indentedTextWriter.NewLine = "\n";
@@ -21,7 +29,7 @@ namespace Fluent.CodeGen
         {
             var lines = body.Split("\n").ToList();
             var last = lines.Last();
-            lines.ForEach(line => 
+            lines.ForEach(line =>
             {
                 if(line.Equals(last) && string.IsNullOrEmpty(line))
                 {
@@ -34,7 +42,7 @@ namespace Fluent.CodeGen
                     indentedTextWriter.WriteLine();
                     indentedTextWriter.Indent = indentation;
                 }
-                else 
+                else
                 {
                     indentedTextWriter.WriteLine(line);
                 }

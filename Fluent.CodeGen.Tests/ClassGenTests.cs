@@ -376,7 +376,6 @@ namespace Fluent.CodeGen.Tests
                         public Program()
                         {
                         }
-
                     }
                 }
                 """";
@@ -449,7 +448,6 @@ namespace Fluent.CodeGen.Tests
                         public Program()
                         {
                         }
-
                     }
                 }
                 """";

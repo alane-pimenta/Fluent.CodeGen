@@ -108,6 +108,7 @@ namespace Fluent.CodeGen
 
         public override string GenerateCode()
         {
+            Flush();
             foreach (string @namespace in namespaces)
             {
                 indentedTextWriter.WriteLine($"using {@namespace};");
@@ -176,7 +177,7 @@ namespace Fluent.CodeGen
 
             foreach(var field in fields)
             {
-                indentedTextWriter.WriteLine(field.GenerateCode());
+                WriteMultipleLines(field.GenerateCode());
             }
 
             if(fields.Any())
@@ -202,13 +203,13 @@ namespace Fluent.CodeGen
 
             if (constructor is not null)
             {
-                indentedTextWriter.WriteLine(constructor.GenerateCode(indentedTextWriter.Indent));
+                WriteMultipleLines(constructor.GenerateCode());
             }
 
             var last = methods.LastOrDefault();
             methods.ForEach(method => 
             {
-                indentedTextWriter.WriteLine(method.GenerateCode(indentedTextWriter.Indent));
+                WriteMultipleLines(method.GenerateCode());
                 if(!last.Equals(method))
                 {
                     var indentation = indentedTextWriter.Indent;
