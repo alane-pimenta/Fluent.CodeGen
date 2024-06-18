@@ -1,3 +1,5 @@
+using Fluent.CodeGen.Consts;
+
 namespace Fluent.CodeGen.Tests
 {
     public class ClassGenTests
@@ -370,6 +372,79 @@ namespace Fluent.CodeGen.Tests
                     {
                         public static string test;
                         int amount = 10;
+
+                        public Program()
+                        {
+                        }
+
+                    }
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+        [Fact]
+        public void TestClassWithProperty()
+        {
+            var propertyTest = new PropertyGen("string", "Test")
+                .Public()
+                .Static();
+
+            var propertyAmount = new PropertyGen("int", "Amount")
+                .Set(AccessModifiers.Private, "")
+                .Assign("10");
+
+            var getBody = """
+                string final = DateTime.Now.ToShortDateString() + " - " + Test;
+                return final;
+                """;
+
+            var setBody = """
+                string final = value.ToLower();
+                this.Test = final;
+                """;
+
+            var propertyLog = new PropertyGen(type: "string", name: "Log")
+                .Public()
+                .Get(getBody)
+                .Set(setBody);
+
+
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+                .Using("System")
+                .Namespace("My.Test")
+                .Public()
+                .WithProperty(propertyTest)
+                .WithProperty(propertyAmount)
+                .WithProperty(propertyLog)
+                .Constructor(ctor => ctor.Public())
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+
+                namespace My.Test
+                {
+                    public class Program
+                    {
+                        public static string Test { get; set; }
+                        int Amount { get; private set; } = 10;
+                        public string Log
+                        {
+                            get
+                            {
+                                string final = DateTime.Now.ToShortDateString() + " - " + Test;
+                                return final;
+                            }
+                            set
+                            {
+                                string final = value.ToLower();
+                                this.Test = final;
+                            }
+                        }
 
                         public Program()
                         {
