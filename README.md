@@ -1,10 +1,30 @@
 # Fluent.CodeGen
 
-This library provides a fluent api that is responsible for generating C# source code. It can generate Class, Method, Constructor, Fields, Properties, Enum and so on.
+This library provides a fluent api that is responsible for generating C# human readable source code. It can generate Class, Method, Constructor, Fields, Properties, Enum and so on.
+
+<p align="center">
+  <img src="resources/header.png">
+</p>
+<p align="center">
+    <img alt="nuget" src="https://img.shields.io/nuget/dt/Fluent.CodeGen.svg">
+    <a href="https://app.codacy.com?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade">
+        <img src="https://app.codacy.com/project/badge/Grade/557bd5392ade4dcc89cd810df48ba103"/>
+    </a>
+    <img alt="nuget version" src="https://img.shields.io/nuget/v/Fluent.CodeGen.svg">
+</p>
+
+
+## Installation
+
+In order to install the library you must run:
+
+```sh
+dotnet add package Fluent.CodeGen
+```
+
+## Examples
 
 Many examples can be found on [unit tests](https://github.com/Alanep0922/Fluent.CodeGen/tree/main/Fluent.CodeGen.Tests)
-
-Example:
 
 ```csharp
 var fieldTest = new FieldGen("string", "test")
