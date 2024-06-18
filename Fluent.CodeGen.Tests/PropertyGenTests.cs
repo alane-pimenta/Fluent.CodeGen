@@ -116,7 +116,7 @@ namespace Fluent.CodeGen.Tests
                 .NoGet()
                 .NoSet();
 
-            var expectedCode = "string Test;"; //Should work like a field;
+            var expectedCode = "string Test;";
 
             Assert.Equal(expectedCode, propertyGen.GenerateCode());
         }

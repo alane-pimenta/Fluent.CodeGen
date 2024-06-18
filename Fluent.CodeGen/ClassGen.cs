@@ -14,14 +14,14 @@ namespace Fluent.CodeGen
         public string ClassName { get; private set; }
         private string? extends;
         private bool isStatic;
-        private HashSet<string> implements;
-        private HashSet<string> namespaces;
+        private readonly HashSet<string> implements;
+        private readonly HashSet<string> namespaces;
         private string accessModifier = AccessModifiers.Default;
 
-        private List<MethodGen> methods;
+        private readonly List<MethodGen> methods;
         private ConstructorGen constructor;
-        private List<FieldGen> fields;
-        private List<PropertyGen> properties;
+        private readonly List<FieldGen> fields;
+        private readonly List<PropertyGen> properties;
 
         public ClassGen(string name)
         {
