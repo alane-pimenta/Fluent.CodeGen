@@ -21,6 +21,7 @@ namespace Fluent.CodeGen
         private List<MethodGen> methods;
         private ConstructorGen constructor;
         private List<FieldGen> fields;
+        private List<PropertyGen> properties;
 
         public ClassGen(string name)
         {
@@ -29,6 +30,7 @@ namespace Fluent.CodeGen
             namespaces = new HashSet<string>();
             methods = new List<MethodGen>();
             fields = new List<FieldGen>();
+            properties = new List<PropertyGen>();
         }
 
         public ClassGen Using(params string[] namespaces)
@@ -95,6 +97,12 @@ namespace Fluent.CodeGen
         public ClassGen WithField(FieldGen fieldGen)
         {
             fields.Add(fieldGen);
+            return this;
+        }
+
+        public ClassGen WithProperty(PropertyGen propertyGen)
+        {
+            properties.Add(propertyGen);
             return this;
         }
 
@@ -179,7 +187,20 @@ namespace Fluent.CodeGen
                 indentedTextWriter.Indent = indent;
             }
 
-            if(constructor is not null)
+            foreach (var property in properties)
+            {
+                WriteMultipleLines(property.GenerateCode());
+            }
+
+            if (properties.Any())
+            {
+                var indent = indentedTextWriter.Indent;
+                indentedTextWriter.Indent = 0;
+                indentedTextWriter.WriteLine();
+                indentedTextWriter.Indent = indent;
+            }
+
+            if (constructor is not null)
             {
                 indentedTextWriter.WriteLine(constructor.GenerateCode(indentedTextWriter.Indent));
             }
