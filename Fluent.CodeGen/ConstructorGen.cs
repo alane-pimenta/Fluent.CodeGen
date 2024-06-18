@@ -70,6 +70,7 @@ namespace Fluent.CodeGen
 
         public override string GenerateCode()
         {
+            Flush();
             indentedTextWriter.Write(accessModifier);
             if(!AccessModifiers.Default.Equals(accessModifier))
             {

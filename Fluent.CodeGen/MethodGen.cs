@@ -19,13 +19,13 @@ namespace Fluent.CodeGen
         public string ReturnType { get; private set; } = "void";
         public bool IsOverride { get; private set; } = false;
 
-        public MethodGen(string name) 
+        public MethodGen(string name)
         {
             Name = name;
             parameters = new Dictionary<string, string>();
         }
 
-        public MethodGen(string returnType, string name) 
+        public MethodGen(string returnType, string name)
         {
             ReturnType = returnType;
             Name = name;
@@ -88,18 +88,18 @@ namespace Fluent.CodeGen
 
         public override string GenerateCode()
         {
-            indentedTextWriter.NewLine = "\n";
+            Flush();
 
             if(!AccessModifiers.Default.Equals(accessModifier))
             {
                 indentedTextWriter.Write($"{accessModifier} ");
             }
-            
+
             if(IsOverride)
             {
                 indentedTextWriter.Write("override ");
             }
-            
+
             if(IsStatic)
             {
                 indentedTextWriter.Write("static ");
@@ -112,13 +112,13 @@ namespace Fluent.CodeGen
 
             var @params = string.Join(", ", parameters.Select(parameter => $"{parameter.Value} {parameter.Key}"));
             indentedTextWriter.Write(@params);
-            
+
             indentedTextWriter.WriteLine(")");
             indentedTextWriter.WriteLine("{");
             indentedTextWriter.Indent++;
-            
+
             WriteMultipleLines(Body);
-            
+
             indentedTextWriter.Indent--;
             indentedTextWriter.Write("}");
 
