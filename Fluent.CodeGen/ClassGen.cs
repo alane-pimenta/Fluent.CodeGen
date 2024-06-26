@@ -1,6 +1,4 @@
 ﻿using System.Text;
-using System.CodeDom.Compiler;
-using System.IO;
 using System.Collections.Generic;
 using Fluent.CodeGen.Consts;
 using System.Linq;
@@ -18,19 +16,19 @@ namespace Fluent.CodeGen
         private readonly HashSet<string> namespaces;
         private string accessModifier = AccessModifiers.Default;
 
-        private readonly List<MethodGen> methods;
+        private readonly IDictionary<string, MethodGen> methods;
         private ConstructorGen constructor;
-        private readonly List<FieldGen> fields;
-        private readonly List<PropertyGen> properties;
+        private readonly IDictionary<string, FieldGen> fields;
+        private readonly IDictionary<string, PropertyGen> properties;
 
         public ClassGen(string name)
         {
             ClassName = name;
             implements = new HashSet<string>();
             namespaces = new HashSet<string>();
-            methods = new List<MethodGen>();
-            fields = new List<FieldGen>();
-            properties = new List<PropertyGen>();
+            methods = new Dictionary<string, MethodGen>();
+            fields = new Dictionary<string, FieldGen>();
+            properties = new Dictionary<string, PropertyGen>();
         }
 
         public ClassGen Using(params string[] namespaces)
@@ -83,7 +81,7 @@ namespace Fluent.CodeGen
 
         public ClassGen WithMethod(MethodGen method)
         {
-            methods.Add(method);
+            methods[method.Name] = method;
             return this;
         }
 
@@ -96,13 +94,13 @@ namespace Fluent.CodeGen
 
         public ClassGen WithField(FieldGen fieldGen)
         {
-            fields.Add(fieldGen);
+            fields[fieldGen.Name] = fieldGen;
             return this;
         }
 
         public ClassGen WithProperty(PropertyGen propertyGen)
         {
-            properties.Add(propertyGen);
+            properties[propertyGen.Name] = propertyGen;
             return this;
         }
 
@@ -175,49 +173,38 @@ namespace Fluent.CodeGen
             indentedTextWriter.WriteLine("{");
             indentedTextWriter.Indent++;
 
-            foreach(var field in fields)
+            foreach(var field in fields.Values)
             {
                 WriteMultipleLines(field.GenerateCode());
             }
 
-            if(fields.Any())
+            if(properties.Any() && fields.Any())
             {
-                var indent = indentedTextWriter.Indent;
-                indentedTextWriter.Indent = 0;
-                indentedTextWriter.WriteLine();
-                indentedTextWriter.Indent = indent;
+                WriteNewLineNoIndentation();
             }
 
-            foreach (var property in properties)
+            foreach (var property in properties.Values)
             {
                 WriteMultipleLines(property.GenerateCode());
             }
 
-            if (properties.Any())
-            {
-                var indent = indentedTextWriter.Indent;
-                indentedTextWriter.Indent = 0;
-                indentedTextWriter.WriteLine();
-                indentedTextWriter.Indent = indent;
-            }
-
             if (constructor is not null)
             {
+                if(fields.Any() || properties.Any())
+                {
+                    WriteNewLineNoIndentation();
+                }
                 WriteMultipleLines(constructor.GenerateCode());
+                if (methods.Any())
+                {
+                    WriteNewLineNoIndentation();
+                }
             }
 
-            var last = methods.LastOrDefault();
-            methods.ForEach(method => 
+            foreach (var method in methods.Values)
             {
                 WriteMultipleLines(method.GenerateCode());
-                if(!last.Equals(method))
-                {
-                    var indentation = indentedTextWriter.Indent;
-                    indentedTextWriter.Indent = 0;
-                    indentedTextWriter.WriteLine();
-                    indentedTextWriter.Indent = indentation;
-                }
-            });
+            }
 
             indentedTextWriter.Indent--;
             if(!string.IsNullOrEmpty(@namespace))
