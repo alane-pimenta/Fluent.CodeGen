@@ -23,6 +23,11 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal("Program", classGen.ClassName);
+            Assert.Single(classGen.Usings);
+            Assert.Empty(classGen.Fields);
+            Assert.Empty(classGen.Properties);
+            Assert.False(classGen.IsStatic);
         }
 
         [Fact]
@@ -44,6 +49,7 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Single(classGen.Usings);
         }
 
         [Fact]
@@ -65,6 +71,8 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Null(classGen.GetNamespace());
+            Assert.Equal(2, classGen.Usings.Count);
         }
 
 
@@ -87,6 +95,7 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal("public", classGen.AccessModifier);
         }
 
 
@@ -111,6 +120,7 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.True(classGen.IsStatic);
         }
 
 
@@ -137,7 +147,7 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
-
+            Assert.Equal("My.Test", classGen.GetNamespace());
         }
 
 
@@ -166,6 +176,7 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal("MyClass", classGen.Inherits);
         }
 
 
@@ -195,6 +206,10 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal("MyClass", classGen.Inherits);
+            Assert.Contains("IInterface", classGen.Implementations);
+            Assert.Contains("IInterface2", classGen.Implementations);
+            Assert.Equal(2, classGen.Implementations.Count);
         }
 
 
@@ -222,6 +237,10 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Null(classGen.Inherits);
+            Assert.Contains("IInterface", classGen.Implementations);
+            Assert.Contains("IInterface2", classGen.Implementations);
+            Assert.Equal(2, classGen.Implementations.Count);
         }
 
 
@@ -305,6 +324,7 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal("internal", classGen.AccessModifier);
         }
 
         [Fact]
@@ -340,6 +360,10 @@ namespace Fluent.CodeGen.Tests
                 """";
 
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Single(classGen.Methods);
+            Assert.Contains("TestMethod", classGen.Methods.Select(x => x.Name));
+            Assert.Contains("int", classGen.Methods.Select(x => x.ReturnType));
+            Assert.Contains("public", classGen.Methods.Select(x => x.AccessModifier));
         }
 
         [Fact]

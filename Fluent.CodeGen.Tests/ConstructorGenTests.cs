@@ -19,6 +19,10 @@
 
                 """";
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal("public", constructorGen.AccessModifier);
+            Assert.Empty(constructorGen.Base);
+            Assert.Empty(constructorGen.Parameters);
+            Assert.Empty(constructorGen.Body);
         }
 
         [Fact]
@@ -39,6 +43,13 @@
                 
                 """";
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal("internal", constructorGen.AccessModifier);
+            Assert.True(constructorGen.Parameters.ContainsKey("numberOfTests"));
+            Assert.True(constructorGen.Parameters.ContainsKey("testText"));
+            Assert.Equal("int", constructorGen.Parameters["numberOfTests"]);
+            Assert.Equal("string", constructorGen.Parameters["testText"]);
+            Assert.True(constructorGen.Parameters.ContainsKey("testText"));
+            Assert.Empty(constructorGen.Body);
         }
 
         [Fact]
@@ -58,12 +69,13 @@
                 
                 """";
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Contains("arg1", constructorGen.Base);
+            Assert.Contains("arg2", constructorGen.Base);
         }
 
         [Fact]
         void TestConstructorWithParameterAndBase()
         {
-
             var constructorGen = new ConstructorGen(className: "TestClass");
 
             var generatedCode = constructorGen.Private()
@@ -79,6 +91,12 @@
                 
                 """";
             Assert.Equal(expectedCode, generatedCode);
+            Assert.True(constructorGen.Parameters.ContainsKey("arg1"));
+            Assert.True(constructorGen.Parameters.ContainsKey("arg2"));
+            Assert.Equal("string", constructorGen.Parameters["arg1"]);
+            Assert.Equal("string", constructorGen.Parameters["arg2"]);
+            Assert.Contains("arg1", constructorGen.Base);
+            Assert.Contains("arg2", constructorGen.Base);
         }
 
 
@@ -109,6 +127,7 @@
                 
                 """";
             Assert.Equal(expectedCode, generatedCode);
+            Assert.Equal(body, constructorGen.Body);
         }
 
 

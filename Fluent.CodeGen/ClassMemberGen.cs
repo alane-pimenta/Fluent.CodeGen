@@ -10,7 +10,7 @@ namespace Fluent.CodeGen
         public string Name { get; private set; }
         public bool IsReadonly { get; private set; }
         public string AccessModifier { get; private set; }
-        public string AssignedValue { get; private set; }
+        public string? AssignedValue { get; private set; }
 
         public ClassMemberGen(string type, string name) 
         {

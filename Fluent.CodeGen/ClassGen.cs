@@ -9,23 +9,30 @@ namespace Fluent.CodeGen
     public class ClassGen : CodeGen
     {
         private string? @namespace;
-        public string ClassName { get; private set; }
-        private string? extends;
-        private bool isStatic;
-        private readonly HashSet<string> implements;
-        private readonly HashSet<string> namespaces;
-        private string accessModifier = AccessModifiers.Default;
-
         private readonly IDictionary<string, MethodGen> methods;
         private ConstructorGen constructor;
         private readonly IDictionary<string, FieldGen> fields;
         private readonly IDictionary<string, PropertyGen> properties;
 
+        public string ClassName { get; private set; }
+        public string AccessModifier { get; private set; }
+        public string? Inherits { get; private set; }
+        public bool IsStatic { get; private set; }
+        public string? GetNamespace() => @namespace;
+        public List<MethodGen> Methods => methods.Values.ToList();
+        public List<FieldGen> Fields => fields.Values.ToList();
+        public List<PropertyGen> Properties => properties.Values.ToList();
+        public ConstructorGen GetConstructor() => constructor;
+        public HashSet<string> Implementations { get; private set; }
+        public HashSet<string> Usings { get; private set; }
+
+
         public ClassGen(string name)
         {
             ClassName = name;
-            implements = new HashSet<string>();
-            namespaces = new HashSet<string>();
+            AccessModifier = AccessModifiers.Default;
+            Implementations = new HashSet<string>();
+            Usings = new HashSet<string>();
             methods = new Dictionary<string, MethodGen>();
             fields = new Dictionary<string, FieldGen>();
             properties = new Dictionary<string, PropertyGen>();
@@ -35,35 +42,35 @@ namespace Fluent.CodeGen
         {
             foreach(var @namespace in namespaces)
             {
-                this.namespaces.Add(@namespace);
+                this.Usings.Add(@namespace);
             }
             return this;
         }
 
-        public ClassGen Implements(params string[] usings)
+        public ClassGen Implements(params string[] interfaceNames)
         {
-            foreach (var @using in usings)
+            foreach (var interfaceName in interfaceNames)
             {
-                implements.Add(@using);
+                Implementations.Add(interfaceName);
             }
             return this;
         }
 
         public ClassGen Public()
         {
-            accessModifier = AccessModifiers.Public;
+            AccessModifier = AccessModifiers.Public;
             return this;
         }
 
         public ClassGen Internal()
         {
-            accessModifier = AccessModifiers.Internal;
+            AccessModifier = AccessModifiers.Internal;
             return this;
         }
 
         public ClassGen Extends(string className)
         {
-            extends = className;
+            Inherits = className;
             return this;
         }
         
@@ -75,7 +82,7 @@ namespace Fluent.CodeGen
 
         public ClassGen Static()
         {
-            isStatic = true;
+            IsStatic = true;
             return this;
         }
 
@@ -107,12 +114,12 @@ namespace Fluent.CodeGen
         public override string GenerateCode()
         {
             Flush();
-            foreach (string @namespace in namespaces)
+            foreach (string @using in Usings)
             {
-                indentedTextWriter.WriteLine($"using {@namespace};");
+                indentedTextWriter.WriteLine($"using {@using};");
             }
 
-            if(namespaces.Any())
+            if(Usings.Any())
             {
                 indentedTextWriter.WriteLine();
             }
@@ -137,34 +144,34 @@ namespace Fluent.CodeGen
         private void GenerateClassBody()
         {
             var classDeclaration = new StringBuilder();
-            classDeclaration.Append(accessModifier);
-            if (!string.IsNullOrEmpty(accessModifier))
+            classDeclaration.Append(AccessModifier);
+            if (!string.IsNullOrEmpty(AccessModifier))
             {
                 classDeclaration.Append(' ');
             }
             
-            if(isStatic)
+            if(IsStatic)
             {
                 classDeclaration.Append("static ");
             }
             classDeclaration.Append($"class {ClassName}");
 
-            if(implements.Count > 0 || !string.IsNullOrEmpty(extends))
+            if(Implementations.Count > 0 || !string.IsNullOrEmpty(Inherits))
             {
                 classDeclaration.Append(" : ");
-                if (!string.IsNullOrEmpty(extends))
+                if (!string.IsNullOrEmpty(Inherits))
                 {
-                    classDeclaration.Append(extends);
+                    classDeclaration.Append(Inherits);
                 }
                 
-                if(implements.Count > 0 && !string.IsNullOrEmpty(extends))
+                if(Implementations.Count > 0 && !string.IsNullOrEmpty(Inherits))
                 {
                     classDeclaration.Append(", ");
                 }
 
-                if(implements.Count > 0)
+                if(Implementations.Count > 0)
                 {
-                    var implemented = string.Join(", ", implements.ToArray());
+                    var implemented = string.Join(", ", Implementations.ToArray());
                     classDeclaration.Append(implemented);
                 }
             }

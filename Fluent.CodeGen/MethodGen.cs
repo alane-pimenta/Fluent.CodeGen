@@ -11,9 +11,9 @@ namespace Fluent.CodeGen
     public class MethodGen : CodeGen
     {
         public string Name { get; private set; }
-        private string accessModifier = AccessModifiers.Default;
+        public string AccessModifier { get; private set; } = AccessModifiers.Default;
         private IDictionary<string, string> parameters;
-        public ReadOnlyDictionary<string, string> Parameters { get => new ReadOnlyDictionary<string, string>(parameters); }
+        public ReadOnlyDictionary<string, string> Parameters => new ReadOnlyDictionary<string, string>(parameters);
         public bool IsStatic { get; private set; } = false;
         public string Body { get; private set; } = string.Empty;
         public string ReturnType { get; private set; } = "void";
@@ -34,25 +34,25 @@ namespace Fluent.CodeGen
 
         public MethodGen Public()
         {
-            accessModifier = AccessModifiers.Public;
+            AccessModifier = AccessModifiers.Public;
             return this;
         }
 
         public MethodGen Private()
         {
-            accessModifier = AccessModifiers.Private;
+            AccessModifier = AccessModifiers.Private;
             return this;
         }
 
         public MethodGen Protected()
         {
-            accessModifier = AccessModifiers.Protected;
+            AccessModifier = AccessModifiers.Protected;
             return this;
         }
 
         public MethodGen Internal()
         {
-            accessModifier = AccessModifiers.Internal;
+            AccessModifier = AccessModifiers.Internal;
             return this;
         }
 
@@ -90,9 +90,9 @@ namespace Fluent.CodeGen
         {
             Flush();
 
-            if(!AccessModifiers.Default.Equals(accessModifier))
+            if(!AccessModifiers.Default.Equals(AccessModifier))
             {
-                indentedTextWriter.Write($"{accessModifier} ");
+                indentedTextWriter.Write($"{AccessModifier} ");
             }
 
             if(IsOverride)

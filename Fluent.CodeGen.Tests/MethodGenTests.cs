@@ -37,10 +37,18 @@
                     return finalText;
                 }
                 """";
+
             Assert.Equal(expectedCode, generatedCode);
             Assert.False(methodGen.IsOverride);
             Assert.True(methodGen.IsStatic);
             Assert.Equal("GenerateText", methodGen.Name);
+            Assert.Equal("public", methodGen.AccessModifier);
+            Assert.Equal("string", methodGen.ReturnType);
+            Assert.True(methodGen.Parameters.ContainsKey("initialText"));
+            Assert.True(methodGen.Parameters.ContainsKey("amount"));
+            Assert.Equal("string", methodGen.Parameters["initialText"]);
+            Assert.Equal("int", methodGen.Parameters["amount"]);
+            Assert.Equal(body, methodGen.Body);
         }
 
 
@@ -59,7 +67,8 @@
 
             var methodGen = new MethodGen(name: "GenerateText");
 
-            var generatedCode = methodGen.Private()
+            var generatedCode = methodGen
+                .Private()
                 .WithReturnType("string")
                 .WithParameter("int", "amount")
                 .WithBody(body)
@@ -77,7 +86,16 @@
                     return finalText;
                 }
                 """";
+
             Assert.Equal(expectedCode, generatedCode);
+            Assert.False(methodGen.IsOverride);
+            Assert.False(methodGen.IsStatic);
+            Assert.Equal("GenerateText", methodGen.Name);
+            Assert.Equal("private", methodGen.AccessModifier);
+            Assert.Equal("string", methodGen.ReturnType);
+            Assert.True(methodGen.Parameters.ContainsKey("amount"));
+            Assert.Equal("int", methodGen.Parameters["amount"]);
+            Assert.Equal(body, methodGen.Body);
         }
 
 
@@ -114,7 +132,16 @@
                     return finalText;
                 }
                 """";
+
             Assert.Equal(expectedCode, generatedCode);
+            Assert.False(methodGen.IsOverride);
+            Assert.False(methodGen.IsStatic);
+            Assert.Equal("GenerateText", methodGen.Name);
+            Assert.Equal("protected", methodGen.AccessModifier);
+            Assert.Equal("string", methodGen.ReturnType);
+            Assert.True(methodGen.Parameters.ContainsKey("amount"));
+            Assert.Equal("int", methodGen.Parameters["amount"]);
+            Assert.Equal(body, methodGen.Body);
         }
 
         [Fact]
@@ -151,7 +178,9 @@
                     return finalText;
                 }
                 """";
+
             Assert.Equal(expectedCode, generatedCode);
+            Assert.True(methodGen.IsOverride);
         }
 
         [Fact]
@@ -192,6 +221,5 @@
             Assert.True(methodGen.IsOverride);
             Assert.False(methodGen.IsStatic);
         }
-
     }
 }
