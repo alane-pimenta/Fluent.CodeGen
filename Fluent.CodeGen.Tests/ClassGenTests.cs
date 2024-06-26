@@ -454,5 +454,122 @@ namespace Fluent.CodeGen.Tests
 
             Assert.Equal(expectedCode, generatedCode);
         }
+
+        [Fact]
+        void ReplaceFieldsIfSameName()
+        {
+            var fieldAmount = new FieldGen("int", "amount")
+                .Assign("10");
+
+            var fieldAmount2 = new FieldGen("int", "amount");
+
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+                .Using("System")
+                .Namespace("My.Test")
+                .Public()
+                .WithField(fieldAmount)
+                .WithField(fieldAmount2)
+                .Constructor(ctor => ctor.Public())
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+
+                namespace My.Test
+                {
+                    public class Program
+                    {
+                        int amount;
+
+                        public Program()
+                        {
+                        }
+                    }
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+
+        [Fact]
+        void ReplacePropertyIfSameName()
+        {
+            var propertyAmount = new PropertyGen("int", "Amount")
+                .Assign("10");
+
+            var propertyAmount2 = new PropertyGen("int", "Amount");
+
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+                .Using("System")
+                .Namespace("My.Test")
+                .Public()
+                .WithProperty(propertyAmount)
+                .WithProperty(propertyAmount2)
+                .Constructor(ctor => ctor.Public())
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+
+                namespace My.Test
+                {
+                    public class Program
+                    {
+                        int Amount { get; set; }
+
+                        public Program()
+                        {
+                        }
+                    }
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+        [Fact]
+        void ReplaceMethodIfSameName()
+        {
+            var methodAmount = new MethodGen("void", "Amount")
+                .Public();
+
+            var methodAmount2 = new MethodGen("void", "Amount");
+
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+                .Using("System")
+                .Namespace("My.Test")
+                .Public()
+                .WithMethod(methodAmount)
+                .WithMethod(methodAmount2)
+                .Constructor(ctor => ctor.Public())
+                .GenerateCode();
+
+            var expectedCode = """"
+                using System;
+
+                namespace My.Test
+                {
+                    public class Program
+                    {
+                        public Program()
+                        {
+                        }
+
+                        void Amount()
+                        {
+                        }
+                    }
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
     }
 }

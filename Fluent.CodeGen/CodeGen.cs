@@ -49,6 +49,14 @@ namespace Fluent.CodeGen
             });
         }
 
+        protected void WriteNewLineNoIndentation()
+        {
+            var indent = indentedTextWriter.Indent;
+            indentedTextWriter.Indent = 0;
+            indentedTextWriter.WriteLine();
+            indentedTextWriter.Indent = indent;
+        }
+
         public abstract string GenerateCode();
 
         public string GenerateCode(int indentation)
