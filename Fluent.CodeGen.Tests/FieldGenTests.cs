@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace Fluent.CodeGen.Tests
 {
     public class FieldGenTests
@@ -12,6 +10,12 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "string test;";
 
             Assert.Equal(expectedCode, fieldGen.GenerateCode());
+            Assert.Equal("string", fieldGen.Type);
+            Assert.Equal("test", fieldGen.Name);
+            Assert.Null(fieldGen.AssignedValue);
+            Assert.False(fieldGen.IsStatic);
+            Assert.False(fieldGen.IsReadonly);
+            Assert.Empty(fieldGen.AccessModifier);
         }
 
         [Fact]
@@ -23,20 +27,30 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "static string test;";
 
             Assert.Equal(expectedCode, fieldGen.GenerateCode());
+            Assert.Equal("string", fieldGen.Type);
+            Assert.Equal("test", fieldGen.Name);
+            Assert.Null(fieldGen.AssignedValue);
+            Assert.True(fieldGen.IsStatic);
+            Assert.False(fieldGen.IsReadonly);
+            Assert.Empty(fieldGen.AccessModifier);
         }
-
-        public readonly string test;
 
         [Fact]
         public void TestPublicStaticField()
         {
             var fieldGen = new FieldGen(type: "string", name: "test")
-                .Public()
+                .Protected()
                 .Static();
 
-            var expectedCode = "public static string test;";
+            var expectedCode = "protected static string test;";
 
             Assert.Equal(expectedCode, fieldGen.GenerateCode());
+            Assert.Equal("string", fieldGen.Type);
+            Assert.Equal("test", fieldGen.Name);
+            Assert.Null(fieldGen.AssignedValue);
+            Assert.True(fieldGen.IsStatic);
+            Assert.False(fieldGen.IsReadonly);
+            Assert.Equal("protected", fieldGen.AccessModifier);
         }
 
         [Fact]
@@ -50,33 +64,51 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "public static string test = \"value\";";
 
             Assert.Equal(expectedCode, fieldGen.GenerateCode());
+            Assert.Equal("string", fieldGen.Type);
+            Assert.Equal("test", fieldGen.Name);
+            Assert.Equal("\"value\"", fieldGen.AssignedValue);
+            Assert.True(fieldGen.IsStatic);
+            Assert.False(fieldGen.IsReadonly);
+            Assert.Equal("public", fieldGen.AccessModifier);
         }
 
         [Fact]
         public void TestPublicStaticReadonlyField()
         {
-            var fieldGen = new FieldGen(type: "string", name: "test")
-                .Public()
+            var fieldGen = new FieldGen(type: "int", name: "test")
+                .Private()
                 .Static()
                 .Readonly();
 
-            var expectedCode = "public static readonly string test;";
+            var expectedCode = "private static readonly int test;";
 
             Assert.Equal(expectedCode, fieldGen.GenerateCode());
+            Assert.Equal("int", fieldGen.Type);
+            Assert.Equal("test", fieldGen.Name);
+            Assert.Null(fieldGen.AssignedValue);
+            Assert.True(fieldGen.IsStatic);
+            Assert.True(fieldGen.IsReadonly);
+            Assert.Equal("private", fieldGen.AccessModifier);
         }
 
         [Fact]
-        public void TestPublicStaticReadonlyFieldAssigned()
+        public void TestInternalStaticReadonlyFieldAssigned()
         {
             var fieldGen = new FieldGen(type: "string", name: "test")
-                .Public()
+                .Internal()
                 .Static()
                 .Readonly()
                 .Assign("\"value\"");
 
-            var expectedCode = "public static readonly string test = \"value\";";
+            var expectedCode = "internal static readonly string test = \"value\";";
 
             Assert.Equal(expectedCode, fieldGen.GenerateCode());
+            Assert.Equal("string", fieldGen.Type);
+            Assert.Equal("test", fieldGen.Name);
+            Assert.Equal("\"value\"", fieldGen.AssignedValue);
+            Assert.True(fieldGen.IsStatic);
+            Assert.True(fieldGen.IsReadonly);
+            Assert.Equal("internal", fieldGen.AccessModifier);
         }
     }
 }

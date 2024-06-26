@@ -13,6 +13,10 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "string Test { get; set; }";
 
             Assert.Equal(expectedCode, propertyGen.GenerateCode());
+            Assert.Equal("string", propertyGen.Type);
+            Assert.Equal("Test", propertyGen.Name);
+            Assert.True(propertyGen.HasGet);
+            Assert.True(propertyGen.HasSet);
         }
 
         [Fact]
@@ -24,6 +28,7 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "string Test { get; set; } = \"Test\";";
 
             Assert.Equal(expectedCode, propertyGen.GenerateCode());
+            Assert.Equal("\"Test\"", propertyGen.AssignedValue);
         }
 
         [Fact]
@@ -36,6 +41,7 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "public string Test { get; set; } = \"Test\";";
 
             Assert.Equal(expectedCode, propertyGen.GenerateCode());
+            Assert.Equal("public", propertyGen.AccessModifier);
         }
 
         [Fact]
@@ -96,6 +102,7 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "string Test { get; private set; } = \"Test\";";
 
             Assert.Equal(expectedCode, propertyGen.GenerateCode());
+            Assert.Equal("private", propertyGen.SetAccessModifier);
         }
 
         [Fact]
@@ -107,6 +114,8 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "string Test { get; }";
 
             Assert.Equal(expectedCode, propertyGen.GenerateCode());
+            Assert.True(propertyGen.HasGet);
+            Assert.False(propertyGen.HasSet);
         }
 
         [Fact]
@@ -119,6 +128,8 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "string Test;";
 
             Assert.Equal(expectedCode, propertyGen.GenerateCode());
+            Assert.False(propertyGen.HasGet);
+            Assert.False(propertyGen.HasSet);
         }
 
         [Fact]
@@ -131,6 +142,8 @@ namespace Fluent.CodeGen.Tests
             var expectedCode = "string Test { get => throw new Exception(); set => throw new Exception(); }";
 
             Assert.Equal(expectedCode, propertyGen.GenerateCode());
+            Assert.Equal("throw new Exception()", propertyGen.GetBody);
+            Assert.Equal("throw new Exception()", propertyGen.SetBody);
         }
 
         [Fact]

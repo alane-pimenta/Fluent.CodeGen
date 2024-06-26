@@ -1,49 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using Fluent.CodeGen.Consts;
 
 namespace Fluent.CodeGen
 {
     public class ConstructorGen : CodeGen
     {
-        private string accessModifier = AccessModifiers.Default;
-        public string Body { get; private set; } = string.Empty;
-        public string ClassName { get; private set; } = string.Empty;
+        public string AccessModifier { get; private set; }
+        public string Body { get; private set; }
+        public string ClassName { get; private set; }
         public HashSet<string> Base { get; private set; }
-
-        private IDictionary<string, string> parameters;
+        public IDictionary<string, string> Parameters { get; private set; }
 
         public ConstructorGen(string className)
         {
+            AccessModifier = AccessModifiers.Default;
+            Body = string.Empty;
             ClassName = className;
-            parameters = new Dictionary<string, string>();
             Base = new HashSet<string>();
+            Parameters = new Dictionary<string, string>();
         }
 
         public ConstructorGen Public()
         {
-            accessModifier = AccessModifiers.Public;
+            AccessModifier = AccessModifiers.Public;
             return this;
         }
 
         public ConstructorGen Private()
         {
-            accessModifier = AccessModifiers.Private;
+            AccessModifier = AccessModifiers.Private;
             return this;
         }
 
         public ConstructorGen Protected()
         {
-            accessModifier = AccessModifiers.Protected;
+            AccessModifier = AccessModifiers.Protected;
             return this;
         }
 
         public ConstructorGen Internal()
         {
-            accessModifier = AccessModifiers.Internal;
+            AccessModifier = AccessModifiers.Internal;
             return this;
         }
 
@@ -55,7 +53,7 @@ namespace Fluent.CodeGen
 
         public ConstructorGen WithParameter(string type, string name)
         {
-            parameters.Add(name, type);
+            Parameters.Add(name, type);
             return this;
         }
 
@@ -71,8 +69,8 @@ namespace Fluent.CodeGen
         public override string GenerateCode()
         {
             Flush();
-            indentedTextWriter.Write(accessModifier);
-            if(!AccessModifiers.Default.Equals(accessModifier))
+            indentedTextWriter.Write(AccessModifier);
+            if(!AccessModifiers.Default.Equals(AccessModifier))
             {
                 indentedTextWriter.Write(" ");
             }
@@ -80,7 +78,7 @@ namespace Fluent.CodeGen
             indentedTextWriter.Write(ClassName);
             indentedTextWriter.Write("(");
 
-            var @params = string.Join(", ", parameters.Select(parameter => $"{parameter.Value} {parameter.Key}"));
+            var @params = string.Join(", ", Parameters.Select(parameter => $"{parameter.Value} {parameter.Key}"));
             indentedTextWriter.Write(@params);
 
             if(Base.Any())
