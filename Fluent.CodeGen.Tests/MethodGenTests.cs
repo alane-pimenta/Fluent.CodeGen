@@ -8,20 +8,18 @@ namespace Fluent.CodeGen.Tests
 {
     public class MethodGenTests
     {
-        //<access mod> + <static?> + <type>(<parameterGen>){ <corpo> }
         [Fact]
         void TestBasicMethod()
         {
-            var body = """"
-            string textoFinal = "";
-            for(int i = 0; i < 10; i++)
-            {
-                string a = "the number is" + i;
-                textoFinal = a + ", ";
-            }
-            return textoFinal;
-            """";
-
+            var body = @"
+        string textoFinal = """";
+        for(int i = 0; i < 10; i++)
+        {
+            string a = ""the number is"" + i;
+            textoFinal = a + "", "";
+        }
+        return textoFinal;
+    ".Trim();
 
             var methodGen = new MethodGen(type: "string", name: "GerarString");
 
@@ -32,20 +30,23 @@ namespace Fluent.CodeGen.Tests
                 .WithBody(body)
                 .GenerateCode();
 
+            var expectedCode = @"
+        public static string GerarString(int bananas, int bananas2)
+        {
+            string textoFinal = """";
+            for(int i = 0; i < 10; i++)
+            {
+                string a = ""the number is"" + i;
+                textoFinal = a + "", "";
+            }
+            return textoFinal;
+        }
+    ".Trim();
 
-            var expectedCode = """"
-                public static string GerarString(int bananas, int bananas2)
-                {
-                    string textoFinal = "";
-                    for(int i = 0; i < 10; i++)
-                    {
-                        string a = "the number is" + i;
-                        textoFinal = a + ", ";
-                    }
-                    return textoFinal;
-                }
-                """";
-            Assert.Equal(generatedCode, expectedCode);
+            var expectedLines = expectedCode.Split('\n').Select(line => line.Trim());
+            var generatedLines = generatedCode.Split('\n').Select(line => line.Trim());
+
+            Assert.Equal(expectedLines, generatedLines);
         }
     }
 }

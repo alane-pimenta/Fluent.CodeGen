@@ -14,5 +14,15 @@ namespace Fluent.CodeGen.Tests
             Assert.Equal(expectedCode, "");
 
         }
+        [Fact]
+        public void TestAddSingleAttribute()
+        {
+            var fieldGen = new FieldGen("TestField", "string")
+            .WithAttribute("MyAttribute");
+
+            var expectedCode = @"MyAttribute\r\nstring TestField;";
+            Assert.Equal(expectedCode, fieldGen.GenerateCode());
+        }
+    
     }
 }

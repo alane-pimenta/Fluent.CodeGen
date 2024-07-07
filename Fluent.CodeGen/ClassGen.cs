@@ -15,9 +15,10 @@ namespace Fluent.CodeGen
         private bool isStatic;
         private List<string> implements;
         private string accessModifier = string.Empty;
+        private List<string> attributesList = new List<string>();
 
-        IndentedTextWriter indentedTextWriter;
-        private StringWriter stringWriter;
+        private readonly IndentedTextWriter indentedTextWriter;
+        private readonly StringWriter stringWriter;
 
         public ClassGen(string name)
         {
@@ -54,11 +55,19 @@ namespace Fluent.CodeGen
             this.extends = className;
             return this;
         }
-        
+
 
         public ClassGen Namespace(string @namespace)
         {
             this.@namespace = @namespace;
+            return this;
+        }
+
+
+
+        public ClassGen WithAttribute(string attribute)
+        {
+            this.attributesList.Add(attribute);
             return this;
         }
 
@@ -85,32 +94,37 @@ namespace Fluent.CodeGen
         private void GenerateClassBody()
         {
             var classDeclaration = new StringBuilder();
+            foreach (var attribute in attributesList) 
+            {
+                classDeclaration.AppendLine($"{attribute}");
+            }
+
             classDeclaration.Append(accessModifier);
             if (!string.IsNullOrEmpty(accessModifier))
             {
                 classDeclaration.Append(' ');
             }
-            
-            if(isStatic)
+
+            if (isStatic)
             {
                 classDeclaration.Append("static ");
             }
             classDeclaration.Append($"class {className}");
 
-            if(this.implements.Count > 0 || !string.IsNullOrEmpty(extends))
+            if (this.implements.Count > 0 || !string.IsNullOrEmpty(extends))
             {
                 classDeclaration.Append(" : ");
                 if (!string.IsNullOrEmpty(extends))
                 {
                     classDeclaration.Append(extends);
                 }
-                
-                if(this.implements.Count > 0 && !string.IsNullOrEmpty(extends))
+
+                if (this.implements.Count > 0 && !string.IsNullOrEmpty(extends))
                 {
                     classDeclaration.Append(", ");
                 }
 
-                if(this.implements.Count > 0)
+                if (this.implements.Count > 0)
                 {
                     var implemented = string.Join(", ", implements.ToArray());
                     classDeclaration.Append(implemented);
