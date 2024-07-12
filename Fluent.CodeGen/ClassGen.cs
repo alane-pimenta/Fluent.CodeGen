@@ -9,7 +9,7 @@ namespace Fluent.CodeGen
     public class ClassGen : CodeGen
     {
         private string? @namespace;
-        private readonly IDictionary<string, MethodGen> methods;
+        public List<MethodGen> Methods { get; private set; }
         private ConstructorGen constructor;
         private readonly IDictionary<string, FieldGen> fields;
         private readonly IDictionary<string, PropertyGen> properties;
@@ -19,7 +19,6 @@ namespace Fluent.CodeGen
         public string? Inherits { get; private set; }
         public bool IsStatic { get; private set; }
         public string? GetNamespace() => @namespace;
-        public List<MethodGen> Methods => methods.Values.ToList();
         public List<FieldGen> Fields => fields.Values.ToList();
         public List<PropertyGen> Properties => properties.Values.ToList();
         public ConstructorGen GetConstructor() => constructor;
@@ -33,7 +32,7 @@ namespace Fluent.CodeGen
             AccessModifier = AccessModifiers.Default;
             Implementations = new HashSet<string>();
             Usings = new HashSet<string>();
-            methods = new Dictionary<string, MethodGen>();
+            Methods = new List<MethodGen>();
             fields = new Dictionary<string, FieldGen>();
             properties = new Dictionary<string, PropertyGen>();
         }
@@ -88,7 +87,7 @@ namespace Fluent.CodeGen
 
         public ClassGen WithMethod(MethodGen method)
         {
-            methods[method.Name] = method;
+            Methods.Add(method);
             return this;
         }
 
@@ -202,13 +201,13 @@ namespace Fluent.CodeGen
                     WriteNewLineNoIndentation();
                 }
                 WriteMultipleLines(constructor.GenerateCode());
-                if (methods.Any())
+                if (Methods.Any())
                 {
                     WriteNewLineNoIndentation();
                 }
             }
 
-            foreach (var method in methods.Values)
+            foreach (var method in Methods)
             {
                 WriteMultipleLines(method.GenerateCode());
             }
