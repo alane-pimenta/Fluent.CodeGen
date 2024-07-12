@@ -131,5 +131,24 @@
         }
 
 
+        [Fact]
+        void TestReplaceParameter()
+        {
+
+            var constructorGen = new ConstructorGen(className: "TestClass");
+
+            constructorGen.WithParameter("object", "numberOfTests");
+            constructorGen.WithParameter("int", "numberOfTests");
+
+            var generatedCode = constructorGen.GenerateCode();
+
+            var expectedCode = """"
+                TestClass(int numberOfTests)
+                {
+                }
+                
+                """";
+            Assert.Equal(expectedCode, generatedCode);
+        }
     }
 }

@@ -1,9 +1,5 @@
-﻿using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Fluent.CodeGen.Consts;
 
 namespace Fluent.CodeGen
@@ -12,8 +8,7 @@ namespace Fluent.CodeGen
     {
         public string Name { get; private set; }
         public string AccessModifier { get; private set; } = AccessModifiers.Default;
-        private IDictionary<string, string> parameters;
-        public ReadOnlyDictionary<string, string> Parameters => new ReadOnlyDictionary<string, string>(parameters);
+        public IDictionary<string, string> Parameters {get; private set;}
         public bool IsStatic { get; private set; } = false;
         public string Body { get; private set; } = string.Empty;
         public string ReturnType { get; private set; } = "void";
@@ -22,14 +17,14 @@ namespace Fluent.CodeGen
         public MethodGen(string name)
         {
             Name = name;
-            parameters = new Dictionary<string, string>();
+            Parameters = new Dictionary<string, string>();
         }
 
         public MethodGen(string returnType, string name)
         {
             ReturnType = returnType;
             Name = name;
-            parameters = new Dictionary<string, string>();
+            Parameters = new Dictionary<string, string>();
         }
 
         public MethodGen Public()
@@ -70,7 +65,7 @@ namespace Fluent.CodeGen
 
         public MethodGen WithParameter(string type, string name)
         {
-            parameters.Add(name, type);
+            Parameters[name] = type;
             return this;
         }
 
@@ -110,7 +105,7 @@ namespace Fluent.CodeGen
             indentedTextWriter.Write(Name);
             indentedTextWriter.Write("(");
 
-            var @params = string.Join(", ", parameters.Select(parameter => $"{parameter.Value} {parameter.Key}"));
+            var @params = string.Join(", ", Parameters.Select(parameter => $"{parameter.Value} {parameter.Key}"));
             indentedTextWriter.Write(@params);
 
             indentedTextWriter.WriteLine(")");

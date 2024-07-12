@@ -53,7 +53,7 @@ namespace Fluent.CodeGen
 
         public ConstructorGen WithParameter(string type, string name)
         {
-            Parameters.Add(name, type);
+            Parameters[name] = type;
             return this;
         }
 

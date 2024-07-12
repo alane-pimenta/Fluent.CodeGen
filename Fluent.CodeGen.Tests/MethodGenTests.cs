@@ -221,5 +221,24 @@
             Assert.True(methodGen.IsOverride);
             Assert.False(methodGen.IsStatic);
         }
+
+        [Fact]
+        void TestReplaceParameter()
+        {
+            var methodGen = new MethodGen(name: "MethodTest");
+
+            methodGen.WithParameter("object", "test");
+            methodGen.WithParameter("string", "test");
+
+            var generatedCode = methodGen.GenerateCode();
+
+            var expectedCode = """"
+                void MethodTest(string test)
+                {
+                }
+                """";
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
     }
 }
