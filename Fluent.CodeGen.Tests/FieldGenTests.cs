@@ -8,8 +8,6 @@ namespace Fluent.CodeGen.Tests
         public void TestNormalClass()
         {
             var fieldGen = new FieldGen();
-
-
             var expectedCode = @"";
             Assert.Equal(expectedCode, "");
 
@@ -18,11 +16,9 @@ namespace Fluent.CodeGen.Tests
         public void TestAddSingleAttribute()
         {
             var fieldGen = new FieldGen("TestField", "string")
-            .WithAttribute("MyAttribute");
-
-            var expectedCode = @"MyAttribute\r\nstring TestField;";
+                .WithAttribute("MyAttribute");
+            var expectedCode = "[MyAttribute]\r\nstring TestField;\r\n";
             Assert.Equal(expectedCode, fieldGen.GenerateCode());
         }
-    
     }
 }

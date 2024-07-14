@@ -12,7 +12,7 @@ namespace Fluent.CodeGen
         private readonly List<string> attributesList = new List<string>();
 
 
-          public FieldGen()
+        public FieldGen()
         {
             this.@static = false;
             this.type = null;
@@ -31,21 +31,21 @@ namespace Fluent.CodeGen
             attributesList.Add(attribute);
             return this;
         }
+
         public string GenerateCode()
         {
             var sb = new StringBuilder();
 
             foreach (var attribute in attributesList)
             {
-                sb.AppendLine($"{attribute}");
+                sb.AppendLine($"[{attribute}]");
             }
 
-            if (!string.IsNullOrEmpty(type))
-            {
-                sb.AppendLine($"{type} {name};");
-            }
+            sb.AppendLine($"{accessModifier}{type} {name};");
 
             return sb.ToString();
         }
+
     }
 }
+
