@@ -24,6 +24,8 @@ namespace Fluent.CodeGen
         public ConstructorGen GetConstructor() => constructor;
         public HashSet<string> Implementations { get; private set; }
         public HashSet<string> Usings { get; private set; }
+        private List<string> attributesList = new List<string>();
+
 
 
         public ClassGen(string name)
@@ -140,9 +142,19 @@ namespace Fluent.CodeGen
             return stringWriter.GetStringBuilder().ToString();
         }
 
+        public ClassGen WithAttribute(string attribute)
+        {
+            this.attributesList.Add(attribute);
+            return this;
+        }
+
         private void GenerateClassBody()
         {
             var classDeclaration = new StringBuilder();
+            foreach (var attribute in attributesList) 
+            {
+                indentedTextWriter.WriteLine(attribute);
+            }
             classDeclaration.Append(AccessModifier);
             if (!string.IsNullOrEmpty(AccessModifier))
             {
