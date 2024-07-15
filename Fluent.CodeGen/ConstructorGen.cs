@@ -11,6 +11,8 @@ namespace Fluent.CodeGen
         public string ClassName { get; private set; }
         public HashSet<string> Base { get; private set; }
         public IDictionary<string, string> Parameters { get; private set; }
+        private readonly List<string> attributesList = new List<string>();
+
 
         public ConstructorGen(string className)
         {
@@ -65,10 +67,20 @@ namespace Fluent.CodeGen
             }
             return this;
         }
+        public ConstructorGen AddAttribute(string attribute)
+        {
+            attributesList.Add(attribute);
+            return this;
+        }
 
         public override string GenerateCode()
         {
             Flush();
+            foreach (var attribute in attributesList)
+            {
+                indentedTextWriter.WriteLine(attribute);
+            }
+            
             indentedTextWriter.Write(AccessModifier);
             if(!AccessModifiers.Default.Equals(AccessModifier))
             {
