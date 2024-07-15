@@ -34,6 +34,11 @@ namespace Fluent.CodeGen
                 indentedTextWriter.Write("readonly ");
             }
 
+            foreach (var attribute in attributesList)
+            {
+                indentedTextWriter.Write($"{attribute} ");
+            }
+
             indentedTextWriter.Write($"{Type} {Name}");
 
             if (!string.IsNullOrWhiteSpace(AssignedValue))
@@ -41,10 +46,6 @@ namespace Fluent.CodeGen
                 indentedTextWriter.Write($" = {AssignedValue}");
             }
 
-            foreach (var attribute in attributesList)
-            {
-                indentedTextWriter.Write($" {attribute}");
-            }
 
             indentedTextWriter.Write($";");
 

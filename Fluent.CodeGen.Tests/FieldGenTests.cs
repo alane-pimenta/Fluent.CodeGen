@@ -112,13 +112,12 @@ namespace Fluent.CodeGen.Tests
         }
 
         [Fact]
-        public void TestAddingAndRemovingAttributes()
+        public void TestAddingAttributes()
         {
-            // Arrange
             var fieldGen = new FieldGen(type: "string", name: "test");
 
             fieldGen.AddAttribute("[Obsolete]");
-            var expectedCodeWithAttribute = "string test [Obsolete];";
+            var expectedCodeWithAttribute = @"[Obsolete] string test;";
             Assert.Equal(expectedCodeWithAttribute, fieldGen.GenerateCode());
         }
     }

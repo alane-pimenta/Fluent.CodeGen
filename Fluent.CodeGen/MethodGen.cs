@@ -8,11 +8,12 @@ namespace Fluent.CodeGen
     {
         public string Name { get; private set; }
         public string AccessModifier { get; private set; } = AccessModifiers.Default;
-        public IDictionary<string, string> Parameters {get; private set;}
+        public IDictionary<string, string> Parameters { get; private set; }
         public bool IsStatic { get; private set; } = false;
         public string Body { get; private set; } = string.Empty;
         public string ReturnType { get; private set; } = "void";
         public bool IsOverride { get; private set; } = false;
+        private readonly List<string> attributesList = new List<string>();
 
         public MethodGen(string name)
         {
@@ -81,21 +82,32 @@ namespace Fluent.CodeGen
             return this;
         }
 
+        public MethodGen AddAttribute(string attribute)
+        {
+            attributesList.Add(attribute);
+            return this;
+        }
+
         public override string GenerateCode()
         {
             Flush();
 
-            if(!AccessModifiers.Default.Equals(AccessModifier))
+            foreach (var attribute in attributesList)
+            {
+                indentedTextWriter.WriteLine(attribute);
+            }
+
+            if (!AccessModifiers.Default.Equals(AccessModifier))
             {
                 indentedTextWriter.Write($"{AccessModifier} ");
             }
 
-            if(IsOverride)
+            if (IsOverride)
             {
                 indentedTextWriter.Write("override ");
             }
 
-            if(IsStatic)
+            if (IsStatic)
             {
                 indentedTextWriter.Write("static ");
             }
