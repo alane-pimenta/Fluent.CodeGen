@@ -11,14 +11,10 @@ namespace Fluent.CodeGen
         public bool HasSet { get; private set; } = true;
         public string SetAccessModifier { get; private set; } = string.Empty;
         public string SetBody { get; private set; } = string.Empty;
-        private readonly List<string> attributesList = new List<string>();
-
-
 
         public PropertyGen(string type, string name) : base(type, name)
         {
         }
-
 
         public PropertyGen Get(string accessModifier, string body)
         {
@@ -61,20 +57,16 @@ namespace Fluent.CodeGen
             HasSet = false;
             return this;
         }
-        public PropertyGen AddAttribute(string attribute)
-        {
-            attributesList.Add(attribute);
-            return this;
-        }
 
         public override string GenerateCode()
         {
             Flush();
-            
-            foreach (var attribute in attributesList)
+
+            foreach (var attribute in Attributes)
             {
                 indentedTextWriter.WriteLine(attribute);
             }
+
             if (!string.IsNullOrEmpty(AccessModifier))
             {
                 indentedTextWriter.Write($"{AccessModifier} ");

@@ -563,7 +563,7 @@ namespace Fluent.CodeGen.Tests
 
             var generatedCode = classGen
             .Using("System")
-            .WithAttribute("[MyCustomAttribute]")
+            .WithAttributes("[MyCustomAttribute]")
             .GenerateCode();
 
             var expectedCode = """"
@@ -582,16 +582,15 @@ namespace Fluent.CodeGen.Tests
         {
             var classGen = new ClassGen("TestClass");
             var generatedCode = classGen
-               .Using("System")
-               .WithAttribute("[MyCustomAttribute]")
-               .WithAttribute("[AnotherCustomAttribute]")
-               .GenerateCode();
+                .Using("System")
+                .WithAttributes("[MyCustomAttribute]", "[AnotherCustomAttribute2]")
+                .GenerateCode();
 
             var expectedCode = """"
             using System;
             
             [MyCustomAttribute]
-            [AnotherCustomAttribute]
+            [AnotherCustomAttribute2]
             class TestClass
             {
             }

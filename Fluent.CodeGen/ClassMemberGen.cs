@@ -1,4 +1,5 @@
-﻿using Fluent.CodeGen.Consts;
+﻿using System.Collections.Generic;
+using Fluent.CodeGen.Consts;
 
 namespace Fluent.CodeGen
 {
@@ -11,12 +12,14 @@ namespace Fluent.CodeGen
         public bool IsReadonly { get; private set; }
         public string AccessModifier { get; private set; }
         public string? AssignedValue { get; private set; }
+        public List<string> Attributes { get; private set; }
 
         public ClassMemberGen(string type, string name) 
         {
             Type = type;
             Name = name;
             AccessModifier = string.Empty;
+            Attributes = new List<string>();
         }
 
         public T Static()
@@ -58,6 +61,15 @@ namespace Fluent.CodeGen
         public T Assign(string value)
         {
             AssignedValue = value;
+            return (T) this;
+        }
+
+        public T WithAttributes(params string[] attributes)
+        {
+            foreach (var attribute in attributes)
+            {
+                Attributes.Add(attribute);
+            }
             return (T) this;
         }
     }

@@ -162,11 +162,12 @@
             var generatedCode = constructorGen.Public()
                 .WithParameter("int", "value")
                 .WithBody(body)
-                .AddAttribute("[Obsolete]")
+                .WithAttributes("[Obsolete]", "[Obsolete1]")
                 .GenerateCode();
 
             var expectedCode = """
                 [Obsolete]
+                [Obsolete1]
                 public TestClass(int value)
                 {
                     this.value = value;

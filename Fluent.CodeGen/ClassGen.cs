@@ -13,7 +13,6 @@ namespace Fluent.CodeGen
         private ConstructorGen constructor;
         private readonly IDictionary<string, FieldGen> fields;
         private readonly IDictionary<string, PropertyGen> properties;
-
         public string ClassName { get; private set; }
         public string AccessModifier { get; private set; }
         public string? Inherits { get; private set; }
@@ -24,7 +23,7 @@ namespace Fluent.CodeGen
         public ConstructorGen GetConstructor() => constructor;
         public HashSet<string> Implementations { get; private set; }
         public HashSet<string> Usings { get; private set; }
-        private List<string> attributesList = new List<string>();
+        public List<string> Attributes { get; private set; }
 
 
 
@@ -37,11 +36,12 @@ namespace Fluent.CodeGen
             Methods = new List<MethodGen>();
             fields = new Dictionary<string, FieldGen>();
             properties = new Dictionary<string, PropertyGen>();
+            Attributes = new List<string>();
         }
 
         public ClassGen Using(params string[] namespaces)
         {
-            foreach(var @namespace in namespaces)
+            foreach (var @namespace in namespaces)
             {
                 this.Usings.Add(@namespace);
             }
@@ -74,7 +74,7 @@ namespace Fluent.CodeGen
             Inherits = className;
             return this;
         }
-        
+
         public ClassGen Namespace(string @namespace)
         {
             this.@namespace = @namespace;
@@ -120,7 +120,7 @@ namespace Fluent.CodeGen
                 indentedTextWriter.WriteLine($"using {@using};");
             }
 
-            if(Usings.Any())
+            if (Usings.Any())
             {
                 indentedTextWriter.WriteLine();
             }
@@ -142,16 +142,20 @@ namespace Fluent.CodeGen
             return stringWriter.GetStringBuilder().ToString();
         }
 
-        public ClassGen WithAttribute(string attribute)
+        public ClassGen WithAttributes(params string[] attributes)
         {
-            this.attributesList.Add(attribute);
+            foreach (var attribute in attributes)
+            {
+                Attributes.Add(attribute);
+            }
             return this;
         }
 
         private void GenerateClassBody()
         {
             var classDeclaration = new StringBuilder();
-            foreach (var attribute in attributesList) 
+
+            foreach (var attribute in Attributes)
             {
                 indentedTextWriter.WriteLine(attribute);
             }
@@ -160,27 +164,27 @@ namespace Fluent.CodeGen
             {
                 classDeclaration.Append(' ');
             }
-            
-            if(IsStatic)
+
+            if (IsStatic)
             {
                 classDeclaration.Append("static ");
             }
             classDeclaration.Append($"class {ClassName}");
 
-            if(Implementations.Count > 0 || !string.IsNullOrEmpty(Inherits))
+            if (Implementations.Count > 0 || !string.IsNullOrEmpty(Inherits))
             {
                 classDeclaration.Append(" : ");
                 if (!string.IsNullOrEmpty(Inherits))
                 {
                     classDeclaration.Append(Inherits);
                 }
-                
-                if(Implementations.Count > 0 && !string.IsNullOrEmpty(Inherits))
+
+                if (Implementations.Count > 0 && !string.IsNullOrEmpty(Inherits))
                 {
                     classDeclaration.Append(", ");
                 }
 
-                if(Implementations.Count > 0)
+                if (Implementations.Count > 0)
                 {
                     var implemented = string.Join(", ", Implementations.ToArray());
                     classDeclaration.Append(implemented);
@@ -191,12 +195,12 @@ namespace Fluent.CodeGen
             indentedTextWriter.WriteLine("{");
             indentedTextWriter.Indent++;
 
-            foreach(var field in fields.Values)
+            foreach (var field in fields.Values)
             {
                 WriteMultipleLines(field.GenerateCode());
             }
 
-            if(properties.Any() && fields.Any())
+            if (properties.Any() && fields.Any())
             {
                 WriteNewLineNoIndentation();
             }
@@ -208,7 +212,7 @@ namespace Fluent.CodeGen
 
             if (constructor is not null)
             {
-                if(fields.Any() || properties.Any())
+                if (fields.Any() || properties.Any())
                 {
                     WriteNewLineNoIndentation();
                 }
@@ -225,7 +229,7 @@ namespace Fluent.CodeGen
             }
 
             indentedTextWriter.Indent--;
-            if(!string.IsNullOrEmpty(@namespace))
+            if (!string.IsNullOrEmpty(@namespace))
             {
                 indentedTextWriter.WriteLine("}");
             }

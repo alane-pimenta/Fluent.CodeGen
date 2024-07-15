@@ -276,8 +276,8 @@ namespace Fluent.CodeGen.Tests
         public void TestPropertyWithAttributes()
         {
             var propertyGen = new PropertyGen(type: "string", name: "Test")
-                .AddAttribute("[JsonProperty(\"test\")]")
-                .AddAttribute("[DataMember]");
+                .WithAttributes("[JsonProperty(\"test\")]")
+                .WithAttributes("[DataMember]");
 
             var expectedCode = """
                 [JsonProperty("test")]

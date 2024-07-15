@@ -262,7 +262,7 @@
                 .WithParameter("string", "initialText")
                 .WithParameter("int", "amount")
                 .WithBody(body)
-                .AddAttribute("[Obsolete]")
+                .WithAttributes("[Obsolete]")
                 .GenerateCode();
 
             var expectedCode = """

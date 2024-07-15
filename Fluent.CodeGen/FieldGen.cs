@@ -4,21 +4,18 @@ namespace Fluent.CodeGen
 {
     public class FieldGen : ClassMemberGen<FieldGen>
     {
-        private readonly List<string> attributesList = new List<string>();
-
         public FieldGen(string type, string name) : base(type, name)
         {
         }
 
-        public void AddAttribute(string attribute)
-        {
-            attributesList.Add(attribute);
-        }
-
         public override string GenerateCode()
         {
-
             Flush();
+            foreach (var attribute in Attributes)
+            {
+                indentedTextWriter.WriteLine(attribute);
+            }
+
             if (!string.IsNullOrEmpty(AccessModifier))
             {
                 indentedTextWriter.Write($"{AccessModifier} ");
@@ -34,18 +31,12 @@ namespace Fluent.CodeGen
                 indentedTextWriter.Write("readonly ");
             }
 
-            foreach (var attribute in attributesList)
-            {
-                indentedTextWriter.Write($"{attribute} ");
-            }
-
             indentedTextWriter.Write($"{Type} {Name}");
 
             if (!string.IsNullOrWhiteSpace(AssignedValue))
             {
                 indentedTextWriter.Write($" = {AssignedValue}");
             }
-
 
             indentedTextWriter.Write($";");
 
