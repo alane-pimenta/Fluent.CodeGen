@@ -1,4 +1,6 @@
-﻿namespace Fluent.CodeGen
+﻿using System.Collections.Generic;
+
+namespace Fluent.CodeGen
 {
     public class FieldGen : ClassMemberGen<FieldGen>
     {
@@ -9,24 +11,29 @@
         public override string GenerateCode()
         {
             Flush();
-            if(!string.IsNullOrEmpty(AccessModifier))
+            foreach (var attribute in Attributes)
+            {
+                indentedTextWriter.WriteLine(attribute);
+            }
+
+            if (!string.IsNullOrEmpty(AccessModifier))
             {
                 indentedTextWriter.Write($"{AccessModifier} ");
             }
 
-            if(IsStatic)
+            if (IsStatic)
             {
                 indentedTextWriter.Write("static ");
             }
 
-            if(IsReadonly)
+            if (IsReadonly)
             {
                 indentedTextWriter.Write("readonly ");
             }
 
             indentedTextWriter.Write($"{Type} {Name}");
 
-            if(!string.IsNullOrWhiteSpace(AssignedValue))
+            if (!string.IsNullOrWhiteSpace(AssignedValue))
             {
                 indentedTextWriter.Write($" = {AssignedValue}");
             }

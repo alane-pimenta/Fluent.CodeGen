@@ -150,5 +150,32 @@
                 """";
             Assert.Equal(expectedCode, generatedCode);
         }
+        [Fact]
+        void TestConstructorWithAttributes()
+        {
+            var body = """
+                this.value = value;
+                """;
+
+            var constructorGen = new ConstructorGen(className: "TestClass");
+
+            var generatedCode = constructorGen.Public()
+                .WithParameter("int", "value")
+                .WithBody(body)
+                .WithAttributes("[Obsolete]", "[Obsolete1]")
+                .GenerateCode();
+
+            var expectedCode = """
+                [Obsolete]
+                [Obsolete1]
+                public TestClass(int value)
+                {
+                    this.value = value;
+                }
+                
+                """;
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
     }
 }

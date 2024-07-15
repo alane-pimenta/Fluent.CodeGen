@@ -8,16 +8,18 @@ namespace Fluent.CodeGen
     {
         public string Name { get; private set; }
         public string AccessModifier { get; private set; } = AccessModifiers.Default;
-        public IDictionary<string, string> Parameters {get; private set;}
+        public IDictionary<string, string> Parameters { get; private set; }
         public bool IsStatic { get; private set; } = false;
         public string Body { get; private set; } = string.Empty;
         public string ReturnType { get; private set; } = "void";
         public bool IsOverride { get; private set; } = false;
+        public List<string> Attributes { get; private set; }
 
         public MethodGen(string name)
         {
             Name = name;
             Parameters = new Dictionary<string, string>();
+            Attributes = new List<string>();
         }
 
         public MethodGen(string returnType, string name)
@@ -25,6 +27,8 @@ namespace Fluent.CodeGen
             ReturnType = returnType;
             Name = name;
             Parameters = new Dictionary<string, string>();
+            Attributes = new List<string>();
+
         }
 
         public MethodGen Public()
@@ -81,21 +85,35 @@ namespace Fluent.CodeGen
             return this;
         }
 
+        public MethodGen WithAttributes(params string[] attributes)
+        {
+            foreach (var attribute in attributes)
+            {
+                Attributes.Add(attribute);
+            }
+            return this;
+        }
+
         public override string GenerateCode()
         {
             Flush();
 
-            if(!AccessModifiers.Default.Equals(AccessModifier))
+            foreach (var attribute in Attributes)
+            {
+                indentedTextWriter.WriteLine(attribute);
+            }
+
+            if (!AccessModifiers.Default.Equals(AccessModifier))
             {
                 indentedTextWriter.Write($"{AccessModifier} ");
             }
 
-            if(IsOverride)
+            if (IsOverride)
             {
                 indentedTextWriter.Write("override ");
             }
 
-            if(IsStatic)
+            if (IsStatic)
             {
                 indentedTextWriter.Write("static ");
             }

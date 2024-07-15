@@ -271,5 +271,23 @@ namespace Fluent.CodeGen.Tests
 
             Assert.Equal(expectedCode, actualCode);
         }
+
+        [Fact]
+        public void TestPropertyWithAttributes()
+        {
+            var propertyGen = new PropertyGen(type: "string", name: "Test")
+                .WithAttributes("[JsonProperty(\"test\")]")
+                .WithAttributes("[DataMember]");
+
+            var expectedCode = """
+                [JsonProperty("test")]
+                [DataMember]
+                string Test { get; set; }
+                """;
+
+            var actualCode = propertyGen.GenerateCode();
+
+            Assert.Equal(expectedCode, actualCode);
+        }
     }
 }

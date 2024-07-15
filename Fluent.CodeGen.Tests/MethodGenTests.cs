@@ -240,5 +240,48 @@
 
             Assert.Equal(expectedCode, generatedCode);
         }
+
+        [Fact]
+        void TestMethodWithAttributes()
+        {
+            var body = """
+            string finalText = initialText;
+            for(int i = 0; i < amount; i++)
+            {
+                string numberText = "the number is" + i;
+                finalText = finalText + numberText + ", ";
+            }
+            return finalText;
+            """;
+
+            var methodGen = new MethodGen(name: "GenerateText");
+
+            var generatedCode = methodGen.Public()
+                .Static()
+                .WithReturnType("string")
+                .WithParameter("string", "initialText")
+                .WithParameter("int", "amount")
+                .WithBody(body)
+                .WithAttributes("[Obsolete]")
+                .GenerateCode();
+
+            var expectedCode = """
+                [Obsolete]
+                public static string GenerateText(string initialText, int amount)
+                {
+                    string finalText = initialText;
+                    for(int i = 0; i < amount; i++)
+                    {
+                        string numberText = "the number is" + i;
+                        finalText = finalText + numberText + ", ";
+                    }
+                    return finalText;
+                }
+                """;
+
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
     }
 }
+

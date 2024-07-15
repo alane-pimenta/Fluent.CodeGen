@@ -1,4 +1,6 @@
-﻿namespace Fluent.CodeGen
+﻿using System.Collections.Generic;
+
+namespace Fluent.CodeGen
 {
     public class PropertyGen : ClassMemberGen<PropertyGen>
     {
@@ -10,11 +12,9 @@
         public string SetAccessModifier { get; private set; } = string.Empty;
         public string SetBody { get; private set; } = string.Empty;
 
-
         public PropertyGen(string type, string name) : base(type, name)
         {
         }
-
 
         public PropertyGen Get(string accessModifier, string body)
         {
@@ -61,6 +61,12 @@
         public override string GenerateCode()
         {
             Flush();
+
+            foreach (var attribute in Attributes)
+            {
+                indentedTextWriter.WriteLine(attribute);
+            }
+
             if (!string.IsNullOrEmpty(AccessModifier))
             {
                 indentedTextWriter.Write($"{AccessModifier} ");

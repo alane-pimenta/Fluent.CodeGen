@@ -11,6 +11,8 @@ namespace Fluent.CodeGen
         public string ClassName { get; private set; }
         public HashSet<string> Base { get; private set; }
         public IDictionary<string, string> Parameters { get; private set; }
+        public List<string> Attributes { get; private set; }
+
 
         public ConstructorGen(string className)
         {
@@ -19,6 +21,7 @@ namespace Fluent.CodeGen
             ClassName = className;
             Base = new HashSet<string>();
             Parameters = new Dictionary<string, string>();
+            Attributes = new List<string>();
         }
 
         public ConstructorGen Public()
@@ -57,7 +60,7 @@ namespace Fluent.CodeGen
             return this;
         }
 
-        public ConstructorGen WithBase(params string [] arguments)
+        public ConstructorGen WithBase(params string[] arguments)
         {
             foreach (var argument in arguments)
             {
@@ -65,12 +68,25 @@ namespace Fluent.CodeGen
             }
             return this;
         }
+        public ConstructorGen WithAttributes(params string[] attributes)
+        {
+            foreach (var attribute in attributes)
+            {
+                Attributes.Add(attribute);
+            }
+            return this;
+        }
 
         public override string GenerateCode()
         {
             Flush();
+            foreach (var attribute in Attributes)
+            {
+                indentedTextWriter.WriteLine(attribute);
+            }
+
             indentedTextWriter.Write(AccessModifier);
-            if(!AccessModifiers.Default.Equals(AccessModifier))
+            if (!AccessModifiers.Default.Equals(AccessModifier))
             {
                 indentedTextWriter.Write(" ");
             }
@@ -81,7 +97,7 @@ namespace Fluent.CodeGen
             var @params = string.Join(", ", Parameters.Select(parameter => $"{parameter.Value} {parameter.Key}"));
             indentedTextWriter.Write(@params);
 
-            if(Base.Any())
+            if (Base.Any())
             {
                 indentedTextWriter.Write(")");
                 indentedTextWriter.Write(" : base(");

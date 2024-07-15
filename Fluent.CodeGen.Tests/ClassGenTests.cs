@@ -299,7 +299,7 @@ namespace Fluent.CodeGen.Tests
             Assert.Equal(expectedCode, generatedCode);
         }
 
-        
+
         [Fact]
         public void TestInternalClass()
         {
@@ -553,6 +553,48 @@ namespace Fluent.CodeGen.Tests
                 }
                 """";
 
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+        [Fact]
+        public void TestClassWithAttribute()
+        {
+            var classGen = new ClassGen(name: "Program");
+
+            var generatedCode = classGen
+            .Using("System")
+            .WithAttributes("[MyCustomAttribute]")
+            .GenerateCode();
+
+            var expectedCode = """"
+            using System;
+
+            [MyCustomAttribute]
+            class Program
+            {
+            }
+            """";
+            Assert.Equal(expectedCode, generatedCode);
+        }
+
+        [Fact]
+        public void TestAddMultipleAttributes()
+        {
+            var classGen = new ClassGen("TestClass");
+            var generatedCode = classGen
+                .Using("System")
+                .WithAttributes("[MyCustomAttribute]", "[AnotherCustomAttribute2]")
+                .GenerateCode();
+
+            var expectedCode = """"
+            using System;
+            
+            [MyCustomAttribute]
+            [AnotherCustomAttribute2]
+            class TestClass
+            {
+            }
+            """";
             Assert.Equal(expectedCode, generatedCode);
         }
     }

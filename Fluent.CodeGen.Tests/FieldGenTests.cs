@@ -110,5 +110,39 @@ namespace Fluent.CodeGen.Tests
             Assert.True(fieldGen.IsReadonly);
             Assert.Equal("internal", fieldGen.AccessModifier);
         }
+
+        [Fact]
+        public void TestAddingAttributes()
+        {
+            var fieldGen = new FieldGen(type: "string", name: "test");
+
+            fieldGen.WithAttributes("[Obsolete]", "[Obsolete2]");
+
+            var expectedCodeWithAttribute = """
+                [Obsolete]
+                [Obsolete2]
+                string test;
+                """;
+            
+            Assert.Equal(expectedCodeWithAttribute, fieldGen.GenerateCode());
+        }
+
+        [Fact]
+        public void TestAddingAttributesOnPublicField()
+        {
+            var fieldGen = new FieldGen(type: "string", name: "test");
+
+            fieldGen
+                .Public()
+                .WithAttributes("[Obsolete]", "[Obsolete2]");
+
+            var expectedCodeWithAttribute = """
+                [Obsolete]
+                [Obsolete2]
+                public string test;
+                """;
+            
+            Assert.Equal(expectedCodeWithAttribute, fieldGen.GenerateCode());
+        }
     }
 }
